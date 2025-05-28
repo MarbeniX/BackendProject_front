@@ -5,6 +5,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import LoginView from "./views/Auth/LoginView";
 import RegisterView from "./views/Auth/RegisterView";
 import RequestTokenView from "./views/Auth/RequestTokenView";
+import ConfirmAccountView from "./views/Auth/ConfirmAccountView";
 
 const router = createBrowserRouter([
     {
@@ -22,7 +23,8 @@ const router = createBrowserRouter([
         children:[
             { index: true, element: <LoginView/> },
             { path: 'register', element: <RegisterView/> },
-            { path: 'request-code', element: <RequestTokenView/>}
+            { path: 'confirm-account', element: <ConfirmAccountView /> },
+            { path: 'request-code', element: <RequestTokenView/>},
         ]
     }
 ])

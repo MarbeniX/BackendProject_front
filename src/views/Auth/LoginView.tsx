@@ -91,7 +91,7 @@ export default function LoginView() {
                 >Don't you have an account? Register</Link>
 
                 <Link
-                    to={'/auth/request-code'}
+                    to={'/auth/request-password-code'}
                 >Do you forget your password?</Link>
             </nav>
 

@@ -15,14 +15,14 @@ export async function createAccount(formData : AuthCreateAccountForm){
     }
 }
 
-export async function confirmAccount(token: TokenConfirmAccountForm) {
+export async function confirmAccount(token: TokenConfirmAccountForm['token']) {
     try{
         const url = `/auth/${token}`
         const { data } = await api.post(url, token);
-        return data.message;
+        return data;
     }catch (error) {
         if(isAxiosError(error) && error.response){
-            throw new Error(error.response.data.message);
+            throw new Error(error.response.data.error);
         }
     }
 } 
