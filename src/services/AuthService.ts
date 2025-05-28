@@ -56,15 +56,15 @@ export async function requestPasswordCode(formData: AuthRequestCodeForm){
     try{
         const url = 'auth/req-passreset-code'
         const { data } = await api.post(url, formData)
-        return data;
+        return data.message;
     }catch (error) {
         if(isAxiosError(error) && error.response){
-            throw new Error(error.response.data.error);
+            throw new Error(error.response.data.message);
         }
     }
 }
 
-export async function updatePassword({formData, token} : {formData: AuthUpdatePasswordForm, token: TokenConfirmAccountForm}) {
+export async function updatePassword({formData, token} : {formData: AuthUpdatePasswordForm, token: TokenConfirmAccountForm['token']}) {
     try{
         const url = `/auth/update-password/${token}`
         const { data } = await api.post(url, formData)
