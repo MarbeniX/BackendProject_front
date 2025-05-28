@@ -19,10 +19,10 @@ export async function confirmAccount(token: TokenConfirmAccountForm) {
     try{
         const url = `/auth/${token}`
         const { data } = await api.post(url, token);
-        return data;
+        return data.message;
     }catch (error) {
         if(isAxiosError(error) && error.response){
-            throw new Error(error.response.data.error);
+            throw new Error(error.response.data.message);
         }
     }
 } 
@@ -31,11 +31,11 @@ export async function login(formData: AuthLoginForm){
     try{
         const url = '/auth/login';
         const { data } = await api.post(url, formData)
-        localStorage.setItem('AUTH_TOKEN', data)
-        return data;
+        localStorage.setItem('AUTH_TOKEN', data.data)
+        return data.message;
     }catch (error) {
         if(isAxiosError(error) && error.response){
-            throw new Error(error.response.data.error);
+            throw new Error(error.response.data.message);
         }
     }
 }
