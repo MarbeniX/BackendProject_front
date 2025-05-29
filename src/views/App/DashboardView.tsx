@@ -2,6 +2,8 @@
 
 export default function DashboardVie() {
     return (
-        <div>Hi dashboard</div>
+        <>
+            <h1>Hola</h1>
+        </>
     )
 }

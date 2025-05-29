@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AppLayout from "@/layouts/AppLayout";
-import DashboardView from "@/views/DashboardView";
+import DashboardView from "@/views/App/DashboardView";
 import AuthLayout from "./layouts/AuthLayout";
 import LoginView from "./views/Auth/LoginView";
 import RegisterView from "./views/Auth/RegisterView";
