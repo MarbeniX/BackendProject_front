@@ -1,12 +1,25 @@
+import type { AuthGetUser } from "@/types/authTypes"
 import { Link } from "react-router-dom"
 
-export default function sidebarComp() {
+type SideBarProps = {
+    data: AuthGetUser['admin']
+}
+
+export default function sidebarComp({data} : SideBarProps) {
+
     const links = [
         { name: "Home", path: ""},
         { name: "My routines", path: ""},
         { name: "My activity", path: ""},
         { name: "Train", path: ""},
     ]
+
+    const adminLinks = data? 
+        [
+            { name: "Admin profile", path: "" },
+            { name: "Database", path: "" },
+        ]
+    : [];
 
     return (
         <>
@@ -18,6 +31,22 @@ export default function sidebarComp() {
                             to={link.path}
                             className={`text-lg px-4 py-2 rounded hover:bg-gray-700 transition ${
                                 location.pathname === link.path ? "bg-gray-700" : ""
+                            }`}                            
+                        >
+                            {link.name}
+                        </Link>
+                    ))}
+
+                    {adminLinks.length > 0 && (
+                        <div className="border-t border-gray-600 w-4/5"/>
+                    )}
+
+                    {adminLinks.map((link) => (
+                        <Link
+                            key={link.name}
+                            to={link.path}
+                            className={`text-lg px-4 py-2 rounded hover:bg-blue-700 transition ${
+                                location.pathname === link.path ? "bg-blue-700" : ""
                             }`}                            
                         >
                             {link.name}

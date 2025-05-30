@@ -31,12 +31,18 @@ export const routineSchema = z.object({
 
 export const routineResponseSchema = routineSchema.extend({
     id: z.string(),
-    creationDate: z.date(),
+    creationDate: z.string(),
     userId: z.string(),
-    exercises: z.array(exerciseSchema).optional(),
+    exercises: z.array(exerciseSchema).default([])
 })
 
 export const routineListResponseSchema = z.array(routineResponseSchema)
+
+export const GetRoutoinesResponseSchema = z.object({
+    data: z.array(routineResponseSchema),
+    message: z.string(),
+    success: z.boolean(),
+})
 
 export type RoutineCategory = z.infer<typeof routineCategorySchema>
 export type RoutineCreateForm = z.infer<typeof routineSchema>

@@ -19,3 +19,4 @@ export type AuthCreateAccountForm = z.infer<typeof createAccountFormSchema>;
 export type AuthLoginForm = Pick<AuthCreateAccountForm, 'email' | 'password'>;
 export type AuthRequestCodeForm = Pick<AuthCreateAccountForm, 'email'>;
 export type AuthUpdatePasswordForm = Pick<AuthCreateAccountForm, 'password' | 'passwordConfirm'>;
+export type AuthGetUser = z.infer<typeof getUserSchema>;

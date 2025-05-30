@@ -1,6 +1,11 @@
+import type { AuthGetUser } from "@/types/authTypes";
 import { IoIosArrowDown } from "react-icons/io";
 
-export default function headerComp() {
+type headerCompProps = {
+    data: AuthGetUser['username'];
+}
+
+export default function headerComp({data} : headerCompProps) {
     return (
         <>
             <header className="bg-gray-200 p-4 flex items-center justify-end">
@@ -10,7 +15,7 @@ export default function headerComp() {
                     </button>
 
                     <div className="bg-gray-500 text-white px-4 py-2 rounded-md flex items-center space-x-2">
-                        <label>user name</label>
+                        <label>{data}</label>
                         <IoIosArrowDown/>
                     </div>
                 </div>

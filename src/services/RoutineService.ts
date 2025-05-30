@@ -1,6 +1,6 @@
 import api from '@/lib/axios';
 import type { Exercise, ExerciseDifficulty, ExerciseMuscle } from '@/types/exerciseTypes';
-import { routineListResponseSchema, routineResponseSchema, type Routine, type RoutineCreateForm, type RoutineUpdateForm } from '@/types/routineTypes';
+import { GetRoutoinesResponseSchema, routineListResponseSchema, routineResponseSchema, type Routine, type RoutineCreateForm, type RoutineUpdateForm } from '@/types/routineTypes';
 import { isAxiosError } from 'axios';
 
 export async function createRoutine(formData: RoutineCreateForm){
@@ -19,11 +19,12 @@ export async function getAllRoutines(){
     try{
         const url = '/routine/getRoutines';
         const { data } = await api.get(url);
-        const response = routineListResponseSchema.safeParse(data);
-        if(response.success){
+        const response = GetRoutoinesResponseSchema.safeParse(data);
+        if(response.success == true){
             return response.data;
+        }else{
+            throw new Error('Invalid response format');
         }
-        return data;
     }catch (error) {
         if(isAxiosError(error) && error.response){
             throw new Error(error.response.data.error);

@@ -10,17 +10,15 @@ export default function AppLayout() {
     if(isLoading) return <p>Cargando...</p>
     if(isError) return <Navigate to="/auth" replace/>
     
-    return (
+    if(data) return (
         <>
-            <div className="flex">
-                <div className="fixed top-0 left-0 h-screen w-64 z-40">
-                    <Sidebar />
-                </div>
+            <div className="fixed top-0 left-0 h-screen w-64">
+                <Sidebar data={data.admin}/>
             </div>
 
-            <div className="ml-64 flex-1 flex flex-col min-h-screen">
-                <Header />
-                <main className="flex-1 p-4 bg-gray-100">
+            <div className="ml-64 flex-col">
+                <Header data={data.username}/>
+                <main className="p-4">
                     <Outlet />
                 </main>
             </div>

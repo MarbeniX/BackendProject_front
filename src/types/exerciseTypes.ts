@@ -56,7 +56,6 @@ export const difficultyColorMap: Record<ExerciseDifficulty, string> = {
     OPEN: '#dceab2',
 };
 
-
 export const exerciseSchema = z.object({
     id: z.string(),
     description: z.string().max(250).optional(),
