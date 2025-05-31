@@ -1,23 +1,67 @@
-import { getAllRoutines } from "@/services/RoutineService"
+import { deleteRoutineById, getAllRoutines } from "@/services/RoutineService"
 import { useQuery } from "@tanstack/react-query"
 import RoutineComp from "@/components/app/routineComp";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import  {CreateNewRoutineForm}  from "@/components/forms/CreateNewRoutineForm";
+import { type RoutineCategory, type Routine } from "@/types/routineTypes";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast, ToastContainer } from "react-toastify";
+import { searchRoutines } from "@/services/TrainingService";
 
 export default function MyRoutinesView() {
     const [showForm, setShowForm] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const routinesPerPage = 8
-    
-    
+    const [query, setQuery] = useState('')
+    const [debouncedQuery, setDebouncedQuery] = useState('');
+    const [category, setCategory] = useState<RoutineCategory | undefined>(undefined)
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setDebouncedQuery(query.trim())
+        }, 300)
+        return () => clearTimeout(timeout);
+    }, [query])
+
+    const { data: searchResults, refetch: searchRefetch} = useQuery({
+        queryKey: ['search-routines', debouncedQuery, category],
+        queryFn: () => searchRoutines({ name: debouncedQuery, category}),
+        enabled: false,
+    })
+
+    useEffect(() => {
+        if(debouncedQuery.length > 0 || category){
+            searchRefetch();
+        }
+    }, [debouncedQuery, category, searchRefetch])
+
     const { data, error } = useQuery({
         queryFn: getAllRoutines,
         queryKey: ['my-routines']
     }) 
-        
-    const routines = data?.data || [];
 
+    const queryClient = useQueryClient();
+        
+    queryClient.invalidateQueries({
+        queryKey: ['my-routines']
+    })
+    
+    const { mutate } = useMutation({
+        mutationFn: deleteRoutineById,
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: (data) => {
+            toast.success(data.message);
+        }
+    })
+
+    const handleDeleteRoutione = (formData : Routine['id']) => {
+        mutate(formData);
+    }
+
+    const routines = data?.data || [];
+    const routinesPerPage = 8
     const totalPages = Math.ceil(routines.length / routinesPerPage);
     const startIndex = (currentPage - 1) * routinesPerPage;
     const endIndex = startIndex + routinesPerPage;
@@ -33,18 +77,30 @@ export default function MyRoutinesView() {
 
     if(data)return (
         <>
-            <div className="flex flex-col p-4 space-y-8 w-max h-full">
+            <div className="flex flex-col p-4 space-y-8 w-max h-full relative">
                 <h1 className="text-3xl">My routines</h1>
 
                 <div className="flex space-x-5 items-center">
-                    <input
-                        type="text"
-                        placeholder="What do you want to train today?"
-                        className="w-2/3 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                    <div className="w-full flex justify-center">
+                        <input
+                            type="text"
+                            placeholder="What do you want to train today?"
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                        />
+
+                        <input
+                            type="select"
+                            placeholder="Category (optional)"
+                            className="w-1/4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={category || ''}
+                            onChange={(e) => setCategory(e.target.value as RoutineCategory)}
+                        />
+                    </div>
 
                     <button 
-                        className="bg-gray-400 hover:bg-gray-500 cursor-pointer rounded-md p-3 flex items-center"
+                        className="w-1/2 bg-gray-400 hover:bg-gray-500 cursor-pointer rounded-md p-3 flex items-center"
                         onClick={() => setShowForm(true)}
                     >
                         <div className="rounded-full p-2 bg-amber-500 mr-3"/>
@@ -52,11 +108,27 @@ export default function MyRoutinesView() {
                     </button>
                 </div>
                 
+                {searchResults && searchResults.length > 0 && (
+                    <ul className="absolute left-0 right-0 mt-30 ml-4 bg-white border border-gray-300 shadow-lg rounded-lg overflow-y-auto">
+                        {searchResults.map((routine) => (
+                            <li
+                                key={routine.id}
+                                className="cursor-pointer hover:bg-gray-100 rounded-md p-2"
+                            >
+                                <p>{routine.name}</p>
+                            </li>
+                        ))}
+                    </ul>
+                )}
 
                 {routines.length > 0 ? (
                     <div className="grid grid-cols-4 gap-4 h-full">
                         {routinesToDisplay.map((routine) => (
-                            <RoutineComp key={routine.id} data={routine} />
+                            <RoutineComp 
+                                key={routine.id} 
+                                data={routine} 
+                                onDelete={() => handleDeleteRoutione(routine.id)}
+                            />
                         ))}
                     </div>
                 ) : (
@@ -84,6 +156,18 @@ export default function MyRoutinesView() {
                     <CreateNewRoutineForm onClose={() => setShowForm(false)} />
                 )}
             </div>
+
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </>
     )
 }

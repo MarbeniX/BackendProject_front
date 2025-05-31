@@ -46,6 +46,13 @@ export const GetRoutoinesResponseSchema = z.object({
 
 export const routineCategoryArray = routineCategorySchema.options
 
+export const routineSearchRoutineSchema = z.object({
+    id: z.string(),
+    name: z.string()
+})
+
+export const routineSearchListRoutineSchema = z.array(routineSearchRoutineSchema)
+
 export type RoutineCategory = z.infer<typeof routineCategorySchema>
 export type RoutineCreateForm = z.infer<typeof routineSchema>
 export type Routine = z.infer<typeof routineResponseSchema>

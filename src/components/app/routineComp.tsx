@@ -1,12 +1,31 @@
 import type { Routine } from "@/types/routineTypes"
 import ExerciseComp from "@/components/app/exerciseComp"
 import { Link } from "react-router-dom"
+import { CiMenuKebab } from "react-icons/ci";
+import { useState, useEffect, useRef } from "react"
 
 type routineCompProps = {
-    data: Routine
+    data: Routine,
+    onDelete: () => void
 }
 
-export default function routineComp({data} : routineCompProps) {
+export default function routineComp({data, onDelete} : routineCompProps) {
+    const [isOpen, setIsOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     const buttons = [
         { id: "1", label: "View routine", link: "" },
         { id: "2", label: "Start session", link: "" },
@@ -16,7 +35,39 @@ export default function routineComp({data} : routineCompProps) {
         <>
             <div className="bg-gray-400 flex flex-col rounded-md p-5 shadow-md space-y-3 h-70">
                 <div className="space-y-2">
-                    <h2 className="text-2xl">{data.name}</h2>
+                    <div className="flex justify-between">
+                        <h2 className="text-2xl">{data.name}</h2>
+
+                        <div className="relative inline-block text-left" ref={menuRef}>
+                            <CiMenuKebab
+                                className="cursor-pointer text-2xl"
+                                onClick={() => setIsOpen((prev) => !prev)}
+                            />
+
+                            {isOpen && (
+                                <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
+                                    <button
+                                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                        onClick={() => {
+                                            console.log("Option 1 clicked");
+                                            setIsOpen(false);
+                                        }}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                        onClick={() => {
+                                            onDelete();
+                                            setIsOpen(false);
+                                        }}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                     <p>{data.creationDate}</p>
                     <p>{data.description}</p>
                 </div>

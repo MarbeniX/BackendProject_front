@@ -1,5 +1,5 @@
 import api from '@/lib/axios';
-import { routineListResponseSchema, type Routine, type RoutineCategory } from '@/types/routineTypes';
+import { routineSearchListRoutineSchema, type Routine, type RoutineCategory } from '@/types/routineTypes';
 import { getTrainingSessionByIdListSchema, getTrainingSessionByIdSchema, type TrainingSession, type TrainingSessionExerciseList, type TrainingSessionSearchFilter } from '@/types/trainingSessionTypes';
 import { isAxiosError } from 'axios';
 
@@ -88,7 +88,7 @@ export async function searchRoutines(params?: {name?: string, category?: Routine
     try{
         const url = '/training/searchRoutines'
         const { data } = await api.get(url, { params });
-        const reponse = routineListResponseSchema.safeParse(data);
+        const reponse = routineSearchListRoutineSchema.safeParse(data);
         if (reponse.success) {
             return reponse.data;
         }

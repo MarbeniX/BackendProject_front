@@ -3,8 +3,11 @@ import { useState } from "react"
 import ExercisesBig from "@/components/app/exerciseBigComp";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getAllRoutines } from "@/services/RoutineService";
+import { deleteRoutineById, getAllRoutines } from "@/services/RoutineService";
 import RoutineComp from "@/components/app/routineComp";
+import type { Routine } from "@/types/routineTypes";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function DashboardVie() {
     const [activeButton, setActiveButton] = useState<"A" | "B">("A");
@@ -27,6 +30,27 @@ export default function DashboardVie() {
         setActiveButton("B");
     }
 
+    
+    const { mutate } = useMutation({
+        mutationFn: deleteRoutineById,
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: (data) => {
+            toast.success(data.message);
+        }
+    })
+    
+    const handleDeleteRoutione = (formData: Routine['id']) => {
+        mutate(formData);
+    }
+
+    const queryClient = useQueryClient();
+
+    queryClient.invalidateQueries({
+        queryKey: ['routines']
+    });
+
     if(error) {
         return (
             <div className="text-red-500">
@@ -39,7 +63,7 @@ export default function DashboardVie() {
         <>
             <div className="space-y-6 w-full">
                 <div className="space-y-6">
-                    <h2 className="text-3xl">Hi!</h2>
+                    <h2 className="text-3xl">Home</h2>
                     <ReadyToSweat />
                 </div>
 
@@ -79,7 +103,11 @@ export default function DashboardVie() {
                                     <div className="flex flex-col space-y-5 justify-center items-center w-full">
                                         <div className="grid grid-cols-3 gap-5 w-full">
                                             {data.data.slice(0, 3).map((routine) => (
-                                                <RoutineComp key={routine.id} data={routine} />
+                                                <RoutineComp 
+                                                    key={routine.id} 
+                                                    data={routine} 
+                                                    onDelete={() => handleDeleteRoutione(routine.id)}
+                                                />
                                             ))}
                                         </div>
                                         <Link
@@ -99,6 +127,18 @@ export default function DashboardVie() {
                     </div>
                 </div>
             </div>
+
+            <ToastContainer 
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </>
     )
 }

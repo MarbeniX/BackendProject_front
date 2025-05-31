@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { routineCategoryArray, type RoutineCreateForm } from "@/types/routineTypes";
 import { createRoutine } from "@/services/RoutineService";
 import { toast, ToastContainer } from "react-toastify";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ModalOverlayProps = {
     onClose: () => void;
@@ -25,9 +26,15 @@ export const CreateNewRoutineForm = ({ onClose }: ModalOverlayProps) => {
         mutate(formData);
     };
 
+    const queryClient = useQueryClient();
+
+    queryClient.invalidateQueries({
+        queryKey: ['my-routines']
+    });
+
     return(
         <>
-            <div className="fixed inset-0 bg-black opacity-30 items-center justify-center flex h-screen">
+            <div className="fixed inset-0 bg-black opacity-90 items-center justify-center flex h-screen">
                 <form
                     onSubmit={handleSubmit(handleCreateNewRoutine)}
                     className="bg-white p-6 flex shadow-md rounded-md flex-col space-y-4 w-100"
