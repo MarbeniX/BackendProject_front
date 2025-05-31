@@ -9,7 +9,7 @@ export default function sidebarComp({data} : SideBarProps) {
 
     const links = [
         { name: "Home", path: ""},
-        { name: "My routines", path: ""},
+        { name: "My routines", path: "/my-routines"},
         { name: "My activity", path: ""},
         { name: "Train", path: ""},
     ]

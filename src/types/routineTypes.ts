@@ -44,7 +44,10 @@ export const GetRoutoinesResponseSchema = z.object({
     success: z.boolean(),
 })
 
+export const routineCategoryArray = routineCategorySchema.options
+
 export type RoutineCategory = z.infer<typeof routineCategorySchema>
 export type RoutineCreateForm = z.infer<typeof routineSchema>
 export type Routine = z.infer<typeof routineResponseSchema>
 export type RoutineUpdateForm = z.infer<typeof routineSchema>
+export type RoutineGetResponse = z.infer<typeof GetRoutoinesResponseSchema>

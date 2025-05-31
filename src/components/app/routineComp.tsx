@@ -14,24 +14,24 @@ export default function routineComp({data} : routineCompProps) {
 
     return (
         <>
-            <div className="bg-gray-400 flex flex-col rounded-md p-5 shadow-md space-y-3 w-full">
-                <div className=" flex flex-col space-y-2">
+            <div className="bg-gray-400 flex flex-col rounded-md p-5 shadow-md space-y-3 h-70">
+                <div className="space-y-2">
                     <h2 className="text-2xl">{data.name}</h2>
                     <p>{data.creationDate}</p>
                     <p>{data.description}</p>
                 </div>
 
-                <div className="flex flex-col space-y-3 max-h-[160px] overflow-y-auto pr-2">
+                <div className="space-y-3 max-h-[160px] overflow-y-auto pr-2 flex justify-center">
                     {Array.isArray(data.exercises) && data.exercises.length > 0 ? (
                         data.exercises.map((exercise) => (
                             <ExerciseComp key={exercise.id} data={exercise} />
                         ))
                         ) : (
-                        <p>No exercises in this routine</p>
+                        <p className="mt-auto">No exercises in this routine</p>
                     )}
                 </div>
 
-                <nav className="flex justify-between items-center mt-auto">
+                <nav className="flex justify-center gap-5 items-center mt-auto">
                     {buttons.map((button) => (
                         <Link
                             key={button.id}

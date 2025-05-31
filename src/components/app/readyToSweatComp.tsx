@@ -18,7 +18,7 @@ export default function readyToSweatComp() {
                     <button
                         key={button.label}
                         onClick={button.onclick}
-                        className="bg-gray-400 rounded p-4 hover:bg-gray-500 transition-colors w-full sm:w-1/4"
+                        className="bg-gray-400 rounded p-4 hover:bg-gray-500 transition-colors w-full sm:w-1/4 cursor-pointer"
                     >
                         {button.label}
                     </button>

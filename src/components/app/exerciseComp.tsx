@@ -1,5 +1,4 @@
 import { difficultyColorMap, muscleColorMap, type Exercise } from "@/types/exerciseTypes"
-import { Link } from "react-router-dom"
 
 type exerciseCompProps = {
     data: Exercise
@@ -15,7 +14,7 @@ export default function exerciseComp({data} : exerciseCompProps) {
                 <div className="w-7 h-7 rounded-full" style={{backgroundColor: colorMuscle}}/>
 
                 <div className="flex flex-col">
-                    <span className="text-lg">{data.title}</span>
+                    <span className="font-bold">{data.title}</span>
                     <span className="text-sm">{data.description}</span>
                 </div>
                 

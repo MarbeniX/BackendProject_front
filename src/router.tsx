@@ -8,6 +8,7 @@ import RequestTokenView from "./views/Auth/RequestTokenView";
 import ConfirmAccountView from "./views/Auth/ConfirmAccountView";
 import RequestPasswordCode from "./views/Auth/RequestPasswordCode";
 import ResetPasswordView from "./views/Auth/ResetPasswordView";
+import MyRoutinesView from "./views/App/MyRoutinesView";
 
 const router = createBrowserRouter([
     {
@@ -26,7 +27,8 @@ const router = createBrowserRouter([
         path: "/",
         element: <AppLayout />,
         children: [
-            { index: true, element: <Home />}
+            { index: true, element: <Home />},
+            { path: 'my-routines', element: <MyRoutinesView /> },
         ]
     },
 ])
