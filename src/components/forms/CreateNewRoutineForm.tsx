@@ -4,14 +4,15 @@ import { routineCategoryArray, type RoutineCreateForm } from "@/types/routineTyp
 import { createRoutine } from "@/services/RoutineService";
 import { toast, ToastContainer } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useRoutineFormStore } from "@/stores/routineStore";
 
-type ModalOverlayProps = {
-    onClose: () => void;
-};
-
-export const CreateNewRoutineForm = ({ onClose }: ModalOverlayProps) => {
+export const CreateNewRoutineForm = () => {
+    const [addExercise, setAddExercise] = useState(false);  
     const { register, handleSubmit, formState: { errors } } = useForm<RoutineCreateForm>();
     
+    const queryClient = useQueryClient();
+
     const { mutate } = useMutation({
         mutationFn: createRoutine,
         onError: (error) => {
@@ -19,6 +20,9 @@ export const CreateNewRoutineForm = ({ onClose }: ModalOverlayProps) => {
         },
         onSuccess: (data) => {
             toast.success(data.message);
+            queryClient.invalidateQueries({ queryKey: ['my-routines'] }); 
+            closeCreateRoutineForm();
+            handleAddExerciseOption();
         }
     }) 
     
@@ -26,11 +30,14 @@ export const CreateNewRoutineForm = ({ onClose }: ModalOverlayProps) => {
         mutate(formData);
     };
 
-    const queryClient = useQueryClient();
+    const closeCreateRoutineForm = useRoutineFormStore((state) => state.closeCreateRoutineForm)
+    const setShowAddExerciseForm = useRoutineFormStore((state) => state.setShowAddExerciseForm)
 
-    queryClient.invalidateQueries({
-        queryKey: ['my-routines']
-    });
+    const handleAddExerciseOption = () => {
+        if(addExercise){
+            setShowAddExerciseForm(true);
+        }
+    }
 
     return(
         <>
@@ -95,13 +102,13 @@ export const CreateNewRoutineForm = ({ onClose }: ModalOverlayProps) => {
                                     type="radio"
                                     id={value}
                                     value={value}
-                                    className="form-radio h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300"
+                                    className="form-radio h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300 cursor-pointer"
                                     {...register('category', 
                                         { required: 'Please select a category' }
                                     )}
                                     defaultChecked={value === 'FREE'} // Marca "FREE" por defecto (opcional)
                                 />
-                                <label htmlFor={value} className="ml-2 text-gray-700">
+                                <label htmlFor={value} className="ml-2 text-gray-700 cursor-pointer">
                                     {label}
                                 </label>
                                 </div>
@@ -109,7 +116,36 @@ export const CreateNewRoutineForm = ({ onClose }: ModalOverlayProps) => {
                             })}
                         </div>
                     </div>
-                    
+
+                    <div className="flex flex-col space-y-2">
+                        <label className="text-2xl">Add exercises</label>
+                        <div className="flex space-x-4">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    value="yes"
+                                    checked={addExercise}
+                                    onChange={() => setAddExercise(true)}
+                                    className="form-radio text-blue-600 cursor-pointer"
+                                />
+                                <span>Yes</span>
+                            </label>
+                        </div>
+
+                        <div className="flex space-x-4">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    value="no"
+                                    checked={!addExercise}
+                                    onChange={() => setAddExercise(false)}
+                                    className="form-radio text-blue-600 cursor-pointer"
+                                />
+                                <span>No</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <div className="flex justify-center space-x-4 mt-4">
                         <button
                             type="submit"
@@ -121,7 +157,7 @@ export const CreateNewRoutineForm = ({ onClose }: ModalOverlayProps) => {
 
                         <button
                             type="button"
-                            onClick={onClose}
+                            onClick={closeCreateRoutineForm}
                             className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded-lg cursor-pointer transition-colors"
                         >
                             Cancel

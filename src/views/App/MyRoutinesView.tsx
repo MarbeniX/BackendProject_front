@@ -2,38 +2,41 @@ import { deleteRoutineById, getAllRoutines } from "@/services/RoutineService"
 import { useQuery } from "@tanstack/react-query"
 import RoutineComp from "@/components/app/routineComp";
 import { useState, useEffect } from "react";
-import  {CreateNewRoutineForm}  from "@/components/forms/CreateNewRoutineForm";
-import { type RoutineCategory, type Routine } from "@/types/routineTypes";
+import {CreateNewRoutineForm} from "@/components/forms/CreateNewRoutineForm";
+import SearchExercisesBarForm from "@/components/forms/searchExercisesBarForm";
+import { type RoutineCategory, type Routine, routineCategoryArray } from "@/types/routineTypes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast, ToastContainer } from "react-toastify";
 import { searchRoutines } from "@/services/TrainingService";
+import { useRoutineFormStore } from "@/stores/routineStore";
 
 export default function MyRoutinesView() {
-    const [showForm, setShowForm] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-
+    
     const [query, setQuery] = useState('')
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [category, setCategory] = useState<RoutineCategory | undefined>(undefined)
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            setDebouncedQuery(query.trim())
-        }, 300)
-        return () => clearTimeout(timeout);
-    }, [query])
 
     const { data: searchResults, refetch: searchRefetch} = useQuery({
         queryKey: ['search-routines', debouncedQuery, category],
         queryFn: () => searchRoutines({ name: debouncedQuery, category}),
         enabled: false,
     })
+    
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setDebouncedQuery(query.trim())
+        }, 300)
+        return () => {
+            clearTimeout(timeout)
+        }
+    }, [query])
 
     useEffect(() => {
-        if(debouncedQuery.length > 0 || category){
+        if(debouncedQuery.length > 0 || category) {
             searchRefetch();
         }
-    }, [debouncedQuery, category, searchRefetch])
+    }, [debouncedQuery, category ,searchRefetch])
 
     const { data, error } = useQuery({
         queryFn: getAllRoutines,
@@ -42,10 +45,6 @@ export default function MyRoutinesView() {
 
     const queryClient = useQueryClient();
         
-    queryClient.invalidateQueries({
-        queryKey: ['my-routines']
-    })
-    
     const { mutate } = useMutation({
         mutationFn: deleteRoutineById,
         onError: (error) => {
@@ -53,6 +52,7 @@ export default function MyRoutinesView() {
         },
         onSuccess: (data) => {
             toast.success(data.message);
+            queryClient.invalidateQueries({ queryKey: ['my-routines'] });
         }
     })
 
@@ -66,6 +66,10 @@ export default function MyRoutinesView() {
     const startIndex = (currentPage - 1) * routinesPerPage;
     const endIndex = startIndex + routinesPerPage;
     const routinesToDisplay = routines.slice(startIndex, endIndex);
+
+    const showCreateRoutineForm = useRoutineFormStore((state) => state.showCreateRoutineForm)
+    const openCreateRoutineForm = useRoutineFormStore((state) => state.openCreateRoutineForm)
+    const showAddExerciseForm = useRoutineFormStore((state) => state.showAddExerciseForm)
 
     if(error){
         return (
@@ -89,24 +93,44 @@ export default function MyRoutinesView() {
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                         />
-
-                        <input
-                            type="select"
-                            placeholder="Category (optional)"
-                            className="w-1/4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={category || ''}
-                            onChange={(e) => setCategory(e.target.value as RoutineCategory)}
-                        />
+                        
+                        <select
+                            value={category ?? ''}
+                            onChange={(e) =>  setCategory(e.target.value as RoutineCategory)}
+                            className="p-3 border border-gray-300 rounded-lg"
+                        >
+                            <option value="">Category</option>
+                            {routineCategoryArray.map((cat) => (
+                                <option
+                                    key={cat}
+                                    value={cat}
+                                >{cat.charAt(0) + cat.slice(1).toLowerCase()}</option>
+                            ))}
+                        </select>
                     </div>
 
                     <button 
                         className="w-1/2 bg-gray-400 hover:bg-gray-500 cursor-pointer rounded-md p-3 flex items-center"
-                        onClick={() => setShowForm(true)}
+                        onClick={openCreateRoutineForm}
                     >
                         <div className="rounded-full p-2 bg-amber-500 mr-3"/>
                         Create new routine
                     </button>
                 </div>
+
+                {routines.length > 0 ? (
+                    <div className="grid grid-cols-4 gap-4 h-full">
+                        {routinesToDisplay.map((routine) => (
+                            <RoutineComp 
+                            key={routine.id} 
+                            data={routine} 
+                            onDelete={() => handleDeleteRoutione(routine.id)}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <p>Still no routines, create one</p>
+                )}
                 
                 {searchResults && searchResults.length > 0 && (
                     <ul className="absolute left-0 right-0 mt-30 ml-4 bg-white border border-gray-300 shadow-lg rounded-lg overflow-y-auto">
@@ -119,20 +143,6 @@ export default function MyRoutinesView() {
                             </li>
                         ))}
                     </ul>
-                )}
-
-                {routines.length > 0 ? (
-                    <div className="grid grid-cols-4 gap-4 h-full">
-                        {routinesToDisplay.map((routine) => (
-                            <RoutineComp 
-                                key={routine.id} 
-                                data={routine} 
-                                onDelete={() => handleDeleteRoutione(routine.id)}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <p>Still no routines, create one</p>
                 )}
                 
                 <div className="flex justify-center space-x-2 mt-auto">
@@ -151,10 +161,14 @@ export default function MyRoutinesView() {
                     ))}
                 </div>
 
-
-                {showForm && (
-                    <CreateNewRoutineForm onClose={() => setShowForm(false)} />
+                {showCreateRoutineForm && (
+                    <CreateNewRoutineForm/>
                 )}
+                
+                {showAddExerciseForm && (
+                    <SearchExercisesBarForm />
+                )}
+
             </div>
 
             <ToastContainer
