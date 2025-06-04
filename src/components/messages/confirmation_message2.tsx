@@ -2,36 +2,16 @@ import { Fragment, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 interface SaveChangesDialogProps {
-    /** Whether the dialog is visible */
     isOpen: boolean;
-    /** Main headline */
     title?: string;
-    /** Supporting paragraph */
     message?: string;
-    /** Executes once the user confirms */
     onConfirm: () => void;
-    /** Executes once the user cancels / goes back */
     onCancel: () => void;
-    /** Label for the primary (confirm) button */
     confirmLabel?: string;
-    /** Label for the secondary (back) button */
     backLabel?: string;
-    /** Optional icon / avatar element */
     leading?: ReactNode;
 }
 
-/**
- * SaveChangesDialog – confirmation modal matching the provided mockup.
- *
- * Usage:
- * ```tsx
- * <SaveChangesDialog
- *   isOpen={open}
- *   onConfirm={handleSave}
- *   onCancel={() => setOpen(false)}
- * />
- * ```
- */
 export default function SaveChangesDialog({
                                               isOpen,
                                               title = 'Are you sure you want to save the changes?',
