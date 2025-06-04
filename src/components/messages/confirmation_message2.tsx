@@ -1,3 +1,4 @@
+//Plantilla de message confirm y back
 import { Fragment, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -14,8 +15,8 @@ interface SaveChangesDialogProps {
 
 export default function SaveChangesDialog({
                                               isOpen,
-                                              title = 'Are you sure you want to save the changes?',
-                                              message = 'Once saved, the changes will be applied permanently.',
+                                              title,
+                                              message,
                                               onConfirm,
                                               onCancel,
                                               confirmLabel = 'Confirm',
