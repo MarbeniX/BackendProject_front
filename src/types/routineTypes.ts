@@ -33,7 +33,7 @@ export const routineResponseSchema = routineSchema.extend({
     id: z.string(),
     creationDate: z.string(),
     userId: z.string(),
-    exercises: z.array(exerciseSchema).default([])
+    exercises: z.array(exerciseSchema)
 })
 
 export const routineListResponseSchema = z.array(routineResponseSchema)

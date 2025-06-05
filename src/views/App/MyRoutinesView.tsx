@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast, ToastContainer } from "react-toastify";
 import { searchRoutines } from "@/services/TrainingService";
 import { useRoutineFormStore } from "@/stores/routineStore";
+import SearchExercisesBarForm from "@/components/forms/SearchExercisesBarForm";
 
 export default function MyRoutinesView() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -162,6 +163,10 @@ export default function MyRoutinesView() {
 
                 {showCreateRoutineForm && (
                     <CreateNewRoutineForm/>
+                )}
+
+                {showAddExerciseForm && (
+                    <SearchExercisesBarForm/>
                 )}
                 
 

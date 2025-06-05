@@ -1,6 +1,6 @@
 import api from '@/lib/axios';
-import type { Exercise, ExerciseDifficulty, ExerciseMuscle } from '@/types/exerciseTypes';
-import { GetRoutoinesResponseSchema, routineListResponseSchema, routineResponseSchema, type Routine, type RoutineCreateForm, type RoutineUpdateForm } from '@/types/routineTypes';
+import { exerciseReceiveListSchema, type Exercise, type ExerciseDifficulty, type ExerciseMuscle } from '@/types/exerciseTypes';
+import { GetRoutoinesResponseSchema, routineResponseSchema, type Routine, type RoutineCreateForm, type RoutineUpdateForm } from '@/types/routineTypes';
 import { isAxiosError } from 'axios';
 
 export async function createRoutine(formData: RoutineCreateForm){
@@ -75,7 +75,7 @@ export async function searchExercises(params?: {title?: string, muscle?: Exercis
     try{
         const url = '/routine/search'
         const { data } = await api.get(url, { params });
-        const response = routineListResponseSchema.safeParse(data);
+        const response = exerciseReceiveListSchema.safeParse(data);
         if(response.success){
             return response.data;
         }
