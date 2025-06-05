@@ -14,15 +14,15 @@ interface ConfirmDialogProps {
 }
 
 export default function ConfirmDialog({
-                                          isOpen,
-                                          title,
-                                          message,
-                                          onConfirm,
-                                          onCancel,
-                                          confirmLabel = 'Confirm',
-                                          cancelLabel = 'Cancel',
-                                          leading,
-                                      }: ConfirmDialogProps) {
+    isOpen,
+    title,
+    message,
+    onConfirm,
+    onCancel,
+    confirmLabel = 'Confirm',
+    cancelLabel = 'Cancel',
+    leading,
+}: ConfirmDialogProps) {
     if (!isOpen) return null;
 
     const container = typeof window !== 'undefined' ? document.body : null;

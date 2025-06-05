@@ -14,15 +14,15 @@ interface SaveChangesDialogProps {
 }
 
 export default function SaveChangesDialog({
-                                              isOpen,
-                                              title,
-                                              message,
-                                              onConfirm,
-                                              onCancel,
-                                              confirmLabel = 'Confirm',
-                                              backLabel = 'Back',
-                                              leading,
-                                          }: SaveChangesDialogProps) {
+    isOpen,
+    title,
+    message,
+    onConfirm,
+    onCancel,
+    confirmLabel = 'Confirm',
+    backLabel = 'Back',
+    leading,
+}: SaveChangesDialogProps) {
     if (!isOpen) return null;
 
     const container = typeof window !== 'undefined' ? document.body : null;
