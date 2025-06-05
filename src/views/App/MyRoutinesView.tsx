@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query"
 import RoutineComp from "@/components/app/routineComp";
 import { useState, useEffect } from "react";
 import {CreateNewRoutineForm} from "@/components/forms/CreateNewRoutineForm";
-import SearchExercisesBarForm from "@/components/forms/searchExercisesBarForm";
 import { type RoutineCategory, type Routine, routineCategoryArray } from "@/types/routineTypes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast, ToastContainer } from "react-toastify";
@@ -165,9 +164,6 @@ export default function MyRoutinesView() {
                     <CreateNewRoutineForm/>
                 )}
                 
-                {showAddExerciseForm && (
-                    <SearchExercisesBarForm />
-                )}
 
             </div>
 
