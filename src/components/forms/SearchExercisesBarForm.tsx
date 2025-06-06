@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { exerciseDifficultyArray, exerciseMuscleArray, type ExerciseDifficulty, type ExerciseMuscle } from '@/types/exerciseTypes';
 import { searchExercises } from '@/services/RoutineService';
+import ExerciseComp from "@/components/app/exerciseComp"
 
 export default function SearchExercisesBarForm() {
     const [query, setQuery] = useState('');
@@ -35,7 +36,7 @@ export default function SearchExercisesBarForm() {
             <div className="fixed inset-0 bg-black opacity-90 items-center justify-center flex">
                 <div className="bg-white p-6 shadow-md rounded-md w-1/2 flex flex-col space-y-2">
                     <label className="text-2xl">Search exercises</label>
-                    <div className='flex w-full justify-center'>
+                    <div className='flex justify-center'>
                         <input
                             type="text"
                             placeholder="Add exercises to your routine"
@@ -79,7 +80,7 @@ export default function SearchExercisesBarForm() {
                                         key={exercise.id}
                                         className='cursor-pointer hover:bg-gray-100 rounded-md p-2'
                                     >
-                                        <p>{exercise.title}</p>
+                                        <ExerciseComp data={exercise}/>
                                     </li>
                                 ))}
                             </ul>
