@@ -32,7 +32,7 @@ export default function SearchExercisesBarForm() {
 
     return (
         <>
-            <div className="fixed inset-0 bg-black opacity-90 items-center justify-center flex h-screen">
+            <div className="fixed inset-0 bg-black opacity-90 items-center justify-center flex">
                 <div className="bg-white p-6 shadow-md rounded-md w-1/2 flex flex-col space-y-2">
                     <label className="text-2xl">Search exercises</label>
                     <div className='flex w-full justify-center'>
@@ -49,7 +49,7 @@ export default function SearchExercisesBarForm() {
                             onChange={(e) => setMuscle(e.target.value as ExerciseMuscle)}
                             className='p-3 border border-gray-300 rounded-lg'
                         >
-                            <option>Muscle</option>
+                            <option value=''>Muscle</option>
                             {exerciseMuscleArray.map((muscle) => (
                                 <option
                                     key={muscle}
@@ -63,7 +63,7 @@ export default function SearchExercisesBarForm() {
                             onChange={(e) => setDifficulty(e.target.value as ExerciseDifficulty)}
                             className='p-3 border border-gray-300 rounded-lg'
                         >
-                            <option>Difficulty</option>
+                            <option value=''>Difficulty</option>
                             {exerciseDifficultyArray.map((difficulty) => (
                                 <option
                                     key={difficulty}
@@ -73,7 +73,7 @@ export default function SearchExercisesBarForm() {
                         </select>
                         
                         {searchResult && searchResult.length > 0 && (
-                            <ul className='mt-15 absolute w-1/2 bg-white border border-gray-300 shadow-lg rounded-lg overflow-y-auto'>
+                            <ul className='mt-13 absolute w-1/2 bg-white border border-gray-300 shadow-lg rounded-lg overflow-y-auto'>
                                 {searchResult.map((exercise) => (
                                     <li
                                         key={exercise.id}
@@ -85,6 +85,10 @@ export default function SearchExercisesBarForm() {
                             </ul>
                         )}
                     </div>
+
+                    <button className="w-full bg-gray-400 hover:bg-gray-500 cursor-pointer rounded-md p-3 flex items-center justify-center">
+                        Save
+                    </button>
                 </div>
             </div>
         </>
