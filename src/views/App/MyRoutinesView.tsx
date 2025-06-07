@@ -145,7 +145,7 @@ export default function MyRoutinesView() {
                     </ul>
                 )}
                 
-                <div className="flex justify-center space-x-2 mt-auto">
+                <div className="flex justify-center w-full space-x-2 mt-auto">
                     {Array.from({ length: totalPages }, (_, index) => (
                         <button
                             key={index}

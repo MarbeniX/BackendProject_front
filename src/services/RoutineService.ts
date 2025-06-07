@@ -7,6 +7,7 @@ export async function createRoutine(formData: RoutineCreateForm){
     try{
         const url = '/routine/create-routine';
         const { data } = await api.post(url, formData)
+        console.log(data);
         return data;
     }catch (error) {
         if(isAxiosError(error) && error.response){

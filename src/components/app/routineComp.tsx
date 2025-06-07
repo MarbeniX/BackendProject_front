@@ -34,7 +34,7 @@ export default function routineComp({data, onDelete} : routineCompProps) {
     return (
         <>
             <div className="bg-gray-400 flex flex-col rounded-md p-5 shadow-md space-y-3 h-70">
-                <div className="space-y-2">
+                <div className="space-y-2 w-full max-w-80">
                     <div className="flex justify-between">
                         <h2 className="text-2xl">{data.name}</h2>
 
@@ -68,11 +68,16 @@ export default function routineComp({data, onDelete} : routineCompProps) {
                             )}
                         </div>
                     </div>
-                    <p>{data.creationDate}</p>
-                    <p>{data.description}</p>
+
+                    <div className="flex justify-between">
+                        <p>{data.creationDate}</p>
+                        <p>{data.category}</p>
+                    </div>
+
+                    <p className="break-words whitespace-normal">{data.description}</p>
                 </div>
 
-                <div className="space-y-3 max-h-[160px] overflow-y-auto pr-2 flex justify-center">
+                <div className="space-y-3 overflow-y-auto pr-2 flex flex-col">
                     {Array.isArray(data.exercises) && data.exercises.length > 0 ? (
                         data.exercises.map((exercise) => (
                             <ExerciseComp key={exercise.id} data={exercise} />
