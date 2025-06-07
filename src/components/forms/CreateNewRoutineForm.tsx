@@ -12,6 +12,10 @@ export const CreateNewRoutineForm = () => {
     const { register, handleSubmit, formState: { errors } } = useForm<RoutineCreateForm>();
     
     const queryClient = useQueryClient();
+    
+    const closeCreateRoutineForm = useRoutineFormStore((state) => state.closeCreateRoutineForm)
+    const setShowAddExerciseForm = useRoutineFormStore((state) => state.setShowAddExerciseForm)
+    const setRoutineId = useRoutineFormStore((state) => state.setRoutineId)
 
     const { mutate } = useMutation({
         mutationFn: createRoutine,
@@ -20,6 +24,7 @@ export const CreateNewRoutineForm = () => {
         },
         onSuccess: (data) => {
             toast.success(data.message);
+            setRoutineId(data.data);
             queryClient.invalidateQueries({ queryKey: ['my-routines'] }); 
             closeCreateRoutineForm();
             handleAddExerciseOption();
@@ -30,8 +35,6 @@ export const CreateNewRoutineForm = () => {
         mutate(formData);
     };
 
-    const closeCreateRoutineForm = useRoutineFormStore((state) => state.closeCreateRoutineForm)
-    const setShowAddExerciseForm = useRoutineFormStore((state) => state.setShowAddExerciseForm)
 
     const handleAddExerciseOption = () => {
         if(addExercise){
@@ -62,7 +65,7 @@ export const CreateNewRoutineForm = () => {
                                     message: "Routine name must be at least 3 characters long"
                                 },
                                 maxLength: {
-                                    value: 50,
+                                    value: 10,
                                     message: "Routine name must be at most 50 characters long"
                                 }
                             })}
@@ -81,8 +84,8 @@ export const CreateNewRoutineForm = () => {
                             className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             {...register("description", {
                                 maxLength: {
-                                    value: 200,
-                                    message: "Description must be at most 200 characters long"
+                                    value: 40,
+                                    message: "Description must be at most 40 characters long"
                                 }}
                             )}
                         />
@@ -168,7 +171,7 @@ export const CreateNewRoutineForm = () => {
 
                 <ToastContainer 
                     position="top-right"
-                    autoClose={5000}
+                    autoClose={3000}
                     hideProgressBar={false}
                     newestOnTop={false}
                     closeOnClick

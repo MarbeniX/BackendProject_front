@@ -8,6 +8,8 @@ import RoutineComp from "@/components/app/routineComp";
 import type { Routine } from "@/types/routineTypes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast, ToastContainer } from "react-toastify";
+import { useRoutineFormStore } from "@/stores/routineStore";
+import  ConfirmationMessage  from "@/components/messages/confirmation_message"
 
 export default function DashboardVie() {
     const [activeButton, setActiveButton] = useState<"A" | "B">("A");
@@ -40,8 +42,13 @@ export default function DashboardVie() {
             toast.success(data.message);
         }
     })
+
+    const handleDeleteRoutine = (formData: Routine['id']) => {
+        setRoutineId(formData)
+        setShowDeleteRoutineConfirmationForm(true);
+    }
     
-    const handleDeleteRoutione = (formData: Routine['id']) => {
+    const handleConfirmDeleteRoutine = (formData: Routine['id']) => {
         mutate(formData);
     }
 
@@ -50,6 +57,11 @@ export default function DashboardVie() {
     queryClient.invalidateQueries({
         queryKey: ['routines']
     });
+
+    const setRoutineId = useRoutineFormStore((state) => state.setRoutineId)
+    const routineId = useRoutineFormStore((state) => state.routineId)
+    const setShowDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
+    const showDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.showDeleteRoutineConfrmationForm)
 
     if(error) {
         return (
@@ -106,7 +118,7 @@ export default function DashboardVie() {
                                                 <RoutineComp 
                                                     key={routine.id} 
                                                     data={routine} 
-                                                    onDelete={() => handleDeleteRoutione(routine.id)}
+                                                    onDelete={() => handleDeleteRoutine(routine.id)}
                                                 />
                                             ))}
                                         </div>
@@ -125,6 +137,17 @@ export default function DashboardVie() {
                     <div className="pace-y-6">
                         <h2 className="text-2xl">Recent activity</h2>
                     </div>
+                    
+                    {showDeleteRoutineConfirmationForm && (
+                        <ConfirmationMessage
+                            isOpen={showDeleteRoutineConfirmationForm}
+                            title="Are you sure you want ot delete this routine?"
+                            message="Al information related to this routine will be deleted and cannot be recovered."
+                            onConfirm={() => handleConfirmDeleteRoutine(routineId!)}
+                            onCancel={() => setShowDeleteRoutineConfirmationForm(false)}
+                        />
+                    )}
+                    
                 </div>
             </div>
 

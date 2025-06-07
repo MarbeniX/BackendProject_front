@@ -2,15 +2,19 @@ import { difficultyColorMap, muscleColorMap, type Exercise } from "@/types/exerc
 
 type exerciseCompProps = {
     data: Exercise
+    onClick?: () => void
 }
 
-export default function exerciseComp({data} : exerciseCompProps) {
+export default function exerciseComp({data, onClick} : exerciseCompProps) {
     const colorMuscle = muscleColorMap[data.muscle]
     const colorDifficulty = difficultyColorMap[data.difficulty]
 
     return (
         <>
-            <div className="flex items-center space-x-4 p-3 bg-gray-100 shadow rounded-md w-full">
+            <div 
+                className="flex items-center space-x-4 p-3 bg-gray-100 shadow rounded-md w-full"
+                onClick={onClick}
+            >
                 <div className="w-7 h-7 rounded-full" style={{backgroundColor: colorMuscle}}/>
 
                 <div className="flex flex-col">

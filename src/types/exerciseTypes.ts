@@ -14,6 +14,7 @@ export const exerciseMuscleSchema = z.enum([
 ]); 
 
 export type ExerciseMuscle = z.infer<typeof exerciseMuscleSchema>
+export const exerciseMuscleArray = exerciseMuscleSchema.options
 
 export const muscleColorMap: Record<ExerciseMuscle, string> = {
     SHOULDER: '#001219',
@@ -42,6 +43,7 @@ export const exerciseDifficultySchema = z.enum([
 ]);
 
 export type ExerciseDifficulty = z.infer<typeof exerciseDifficultySchema>;
+export const exerciseDifficultyArray = exerciseDifficultySchema.options
 
 export const difficultyColorMap: Record<ExerciseDifficulty, string> = {
     BEGINNER1: '#ffb3c1',
