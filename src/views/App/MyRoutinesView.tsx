@@ -10,13 +10,14 @@ import { searchRoutines } from "@/services/TrainingService";
 import { useRoutineFormStore } from "@/stores/routineStore";
 import SearchExercisesBarForm from "@/components/forms/SearchExercisesBarForm";
 import  ConfirmationMessage  from "@/components/messages/confirmation_message"
+import ViewRoutineDetailsPopUp from "@/components/pop-ups/ViewRoutineDetailsPopUp"
 
 export default function MyRoutinesView() {
     const [currentPage, setCurrentPage] = useState(1);
-    
     const [query, setQuery] = useState('')
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [category, setCategory] = useState<RoutineCategory | undefined>(undefined)
+    const [selectedRoutine, setSelectedRoutine] = useState<Routine | null>(null);
 
     const { data: searchResults, refetch: searchRefetch} = useQuery({
         queryKey: ['search-routines', debouncedQuery, category],
@@ -45,6 +46,9 @@ export default function MyRoutinesView() {
     }) 
 
     const queryClient = useQueryClient();
+    queryClient.invalidateQueries({
+        queryKey: ['my-routines']
+    })
         
     const { mutate } = useMutation({
         mutationFn: deleteRoutineById,
@@ -65,6 +69,7 @@ export default function MyRoutinesView() {
     const handleConfirmDeleteRoutine = (formData : Routine['id']) => {
         mutate(formData);
         setShowDeleteRoutineConfirmationForm(false);
+        setShowViewRoutineDetails(false);
     }
 
     const routines = data?.data || [];
@@ -81,6 +86,8 @@ export default function MyRoutinesView() {
     const setShowDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
     const setRoutineId = useRoutineFormStore((state) => state.setRoutineId)
     const routineId = useRoutineFormStore((state) => state.routineId)
+    const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
+    const showViewRotuineDetails = useRoutineFormStore((state) => state.showViewRoutineDetails)
 
     if(error){
         return (
@@ -136,6 +143,10 @@ export default function MyRoutinesView() {
                                 key={routine.id} 
                                 data={routine} 
                                 onDelete={() => handleDeleteRoutine(routine.id)}
+                                onViewRoutine={() => {
+                                    setSelectedRoutine(routine);
+                                    setShowViewRoutineDetails(true);
+                                }}
                             />
                         ))}
                     </div>
@@ -190,6 +201,12 @@ export default function MyRoutinesView() {
                     />
                 )}
                 
+                {showViewRotuineDetails && (
+                    <ViewRoutineDetailsPopUp
+                        isOpen={showViewRotuineDetails}
+                        data={selectedRoutine!}
+                    />
+                )}
 
             </div>
 

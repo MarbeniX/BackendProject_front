@@ -10,9 +10,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast, ToastContainer } from "react-toastify";
 import { useRoutineFormStore } from "@/stores/routineStore";
 import  ConfirmationMessage  from "@/components/messages/confirmation_message"
+import ViewRoutineDetailsPopUp from "@/components/pop-ups/ViewRoutineDetailsPopUp";
 
 export default function DashboardVie() {
     const [activeButton, setActiveButton] = useState<"A" | "B">("A");
+    const [ selectedRoutine, setSelectedRoutine ] = useState<Routine | null>(null);
 
     const { data, error } = useQuery({
         queryKey: ['routines'],
@@ -49,6 +51,8 @@ export default function DashboardVie() {
     }
     
     const handleConfirmDeleteRoutine = (formData: Routine['id']) => {
+        setShowDeleteRoutineConfirmationForm(false);
+        setShowViewRoutineDetails(false);
         mutate(formData);
     }
 
@@ -62,6 +66,8 @@ export default function DashboardVie() {
     const routineId = useRoutineFormStore((state) => state.routineId)
     const setShowDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
     const showDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.showDeleteRoutineConfrmationForm)
+    const showViewRoutineDetails = useRoutineFormStore((state) => state.showViewRoutineDetails)
+    const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
 
     if(error) {
         return (
@@ -119,6 +125,10 @@ export default function DashboardVie() {
                                                     key={routine.id} 
                                                     data={routine} 
                                                     onDelete={() => handleDeleteRoutine(routine.id)}
+                                                    onViewRoutine={() => {
+                                                        setSelectedRoutine(routine)
+                                                        setShowViewRoutineDetails(true)
+                                                    }}
                                                 />
                                             ))}
                                         </div>
@@ -148,6 +158,12 @@ export default function DashboardVie() {
                         />
                     )}
                     
+                    {showViewRoutineDetails && (
+                        <ViewRoutineDetailsPopUp
+                            isOpen={showViewRoutineDetails}
+                            data={selectedRoutine!}
+                        />
+                    )}
                 </div>
             </div>
 

@@ -35,7 +35,6 @@ export const CreateNewRoutineForm = () => {
         mutate(formData);
     };
 
-
     const handleAddExerciseOption = () => {
         if(addExercise){
             setShowAddExerciseForm(true);
@@ -166,7 +165,6 @@ export const CreateNewRoutineForm = () => {
                             Cancel
                         </button>
                     </div>
-
                 </form>
 
                 <ToastContainer 
