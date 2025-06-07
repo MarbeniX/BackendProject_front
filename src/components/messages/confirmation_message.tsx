@@ -49,13 +49,13 @@ export default function ConfirmDialog({
                     <div className="mt-6 flex justify-end gap-4">
                         <button
                             onClick={onConfirm}
-                            className="px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800 transition-all"
+                            className="cursor-pointer px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800 transition-all"
                         >
                             {confirmLabel}
                         </button>
                         <button
                             onClick={onCancel}
-                            className="px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400 transition-all"
+                            className="cursor-pointer px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400 transition-all"
                         >
                             {cancelLabel}
                         </button>

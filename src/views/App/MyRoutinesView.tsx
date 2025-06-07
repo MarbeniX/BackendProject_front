@@ -9,6 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { searchRoutines } from "@/services/TrainingService";
 import { useRoutineFormStore } from "@/stores/routineStore";
 import SearchExercisesBarForm from "@/components/forms/SearchExercisesBarForm";
+import  ConfirmationMessage  from "@/components/messages/confirmation_message"
 
 export default function MyRoutinesView() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -56,8 +57,14 @@ export default function MyRoutinesView() {
         }
     })
 
-    const handleDeleteRoutione = (formData : Routine['id']) => {
+    const handleDeleteRoutine = (formData : Routine['id']) => {
+        setRoutineId(formData)
+        setShowDeleteRoutineConfirmationForm(true);
+    }
+
+    const handleConfirmDeleteRoutine = (formData : Routine['id']) => {
         mutate(formData);
+        setShowDeleteRoutineConfirmationForm(false);
     }
 
     const routines = data?.data || [];
@@ -70,6 +77,10 @@ export default function MyRoutinesView() {
     const showCreateRoutineForm = useRoutineFormStore((state) => state.showCreateRoutineForm)
     const openCreateRoutineForm = useRoutineFormStore((state) => state.openCreateRoutineForm)
     const showAddExerciseForm = useRoutineFormStore((state) => state.showAddExerciseForm)
+    const showDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.showDeleteRoutineConfrmationForm)
+    const setShowDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
+    const setRoutineId = useRoutineFormStore((state) => state.setRoutineId)
+    const routineId = useRoutineFormStore((state) => state.routineId)
 
     if(error){
         return (
@@ -122,9 +133,9 @@ export default function MyRoutinesView() {
                     <div className="grid grid-cols-4 gap-4 h-full">
                         {routinesToDisplay.map((routine) => (
                             <RoutineComp 
-                            key={routine.id} 
-                            data={routine} 
-                            onDelete={() => handleDeleteRoutione(routine.id)}
+                                key={routine.id} 
+                                data={routine} 
+                                onDelete={() => handleDeleteRoutine(routine.id)}
                             />
                         ))}
                     </div>
@@ -167,6 +178,16 @@ export default function MyRoutinesView() {
 
                 {showAddExerciseForm && (
                     <SearchExercisesBarForm/>
+                )}
+
+                {showDeleteRoutineConfirmationForm && (
+                    <ConfirmationMessage
+                        isOpen={showDeleteRoutineConfirmationForm}
+                        title="Are you sure you want ot delete this routine?"
+                        message="Al information related to this routine will be deleted and cannot be recovered."
+                        onConfirm={() => handleConfirmDeleteRoutine(routineId!)}
+                        onCancel={() => setShowDeleteRoutineConfirmationForm(false)}
+                    />
                 )}
                 
 
