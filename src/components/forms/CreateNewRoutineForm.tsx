@@ -13,10 +13,6 @@ export const CreateNewRoutineForm = () => {
     
     const queryClient = useQueryClient();
     
-    const closeCreateRoutineForm = useRoutineFormStore((state) => state.closeCreateRoutineForm)
-    const setShowAddExerciseForm = useRoutineFormStore((state) => state.setShowAddExerciseForm)
-    const setRoutineId = useRoutineFormStore((state) => state.setRoutineId)
-
     const { mutate } = useMutation({
         mutationFn: createRoutine,
         onError: (error) => {
@@ -25,9 +21,9 @@ export const CreateNewRoutineForm = () => {
         onSuccess: (data) => {
             toast.success(data.message);
             setRoutineId(data.data);
-            queryClient.invalidateQueries({ queryKey: ['my-routines'] }); 
             closeCreateRoutineForm();
             handleAddExerciseOption();
+            queryClient.invalidateQueries({ queryKey: ['my-routines'] }); 
         }
     }) 
     
@@ -40,6 +36,10 @@ export const CreateNewRoutineForm = () => {
             setShowAddExerciseForm(true);
         }
     }
+    
+    const closeCreateRoutineForm = useRoutineFormStore((state) => state.closeCreateRoutineForm)
+    const setRoutineId = useRoutineFormStore((state) => state.setRoutineId)
+    const setShowAddExerciseForm = useRoutineFormStore((state) => state.setShowAddExerciseForm)
 
     return(
         <>
@@ -167,6 +167,7 @@ export const CreateNewRoutineForm = () => {
                     </div>
                 </form>
 
+
                 <ToastContainer 
                     position="top-right"
                     autoClose={3000}
@@ -177,7 +178,7 @@ export const CreateNewRoutineForm = () => {
                     pauseOnFocusLoss
                     draggable
                     pauseOnHover
-                />
+                    />
             </div>
         </>
     )

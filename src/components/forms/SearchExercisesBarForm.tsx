@@ -1,15 +1,21 @@
-import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { Fragment, useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { exerciseDifficultyArray, exerciseMuscleArray, type Exercise, type ExerciseDifficulty, type ExerciseMuscle } from '@/types/exerciseTypes';
 import { addExerciseToRoutine, searchExercises } from '@/services/RoutineService';
 import ExerciseComp from "@/components/app/exerciseComp"
-import { useMutation } from '@tanstack/react-query';
-import { toast, ToastContainer } from 'react-toastify';
-import type { Routine } from '@/types/routineTypes';
 import { useRoutineFormStore } from '@/stores/routineStore';
-import { useQueryClient } from '@tanstack/react-query';
+import { createPortal } from 'react-dom';
+import { toast, ToastContainer } from 'react-toastify';
 
-export default function SearchExercisesBarForm() {
+type SearchExercisesBarFormProps = {
+    isOpen: boolean,
+}
+
+export default function SearchExercisesBarForm({ isOpen }: SearchExercisesBarFormProps) {
+    if (!isOpen) return null;
+    const container = typeof window !== 'undefined' ? document.body : null;
+    if (!container) return null;
+
     const [query, setQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [muscle, setMuscle] = useState<ExerciseMuscle | undefined>();
@@ -35,30 +41,31 @@ export default function SearchExercisesBarForm() {
             searchRefetch();
         }
     }, [debouncedQuery, muscle, difficulty, searchRefetch])
-
+    
     const queryClient = useQueryClient();
-
-    const { mutate } = useMutation({
+    const {mutate} = useMutation({
         mutationFn: addExerciseToRoutine,
         onError: (error) => {
-            toast.error(error.message)
+            toast.error(error.message);
         },
         onSuccess: (data) => {
-            toast.success(data)
+            toast.success(data.message)
             queryClient.invalidateQueries({ queryKey: ['my-routines'] });
+            queryClient.invalidateQueries({ queryKey: ['routines'] });
+            queryClient.invalidateQueries({ queryKey: ['routine', routineId]});
         }
     })
 
-    const routineId = useRoutineFormStore((state) => state.routineId)
     const setShowAddexerciseForm = useRoutineFormStore((state) => state.setShowAddExerciseForm)
+    const routineId = useRoutineFormStore((state) => state.routineId)
 
-    const handleAddExercise = (formData: { idRoutine: Routine['id'], idExercise: Exercise['id']}) => {
-        mutate(formData)
+    const handleAddExercise = (idExercise: Exercise['id']) => {
+        mutate({ idRoutine: routineId, idExercise });
     }
 
-    return (
-        <>
-            <div className="fixed inset-0 bg-black/50 items-center justify-center flex h-screen">
+    return createPortal(
+        <Fragment>
+            <div className="fixed inset-0 z-50 bg-black/50 items-center justify-center flex h-screen">
                 <div className="bg-white p-6 shadow-md rounded-md w-1/2 flex flex-col space-y-2">
                     <label className="text-2xl">Search exercises</label>
                     <div className='flex justify-center'>
@@ -107,7 +114,7 @@ export default function SearchExercisesBarForm() {
                                     >
                                         <ExerciseComp 
                                             data={exercise}
-                                            onClick={() => handleAddExercise({ idExercise: exercise.id, idRoutine: routineId as Routine['id'] })}
+                                            onClick={() => handleAddExercise(exercise.id)}
                                         />
                                     </li>
                                 ))}
@@ -135,6 +142,7 @@ export default function SearchExercisesBarForm() {
                 draggable
                 pauseOnHover
             />
-        </>
+        </Fragment>,
+        container
     )
 }

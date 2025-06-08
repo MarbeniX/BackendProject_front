@@ -3,11 +3,45 @@ import { userAuth } from "@/hooks/userAuth";
 import { Navigate } from "react-router-dom";
 import Sidebar from "@/components/app/sidebarComp";
 import { IoIosArrowDown } from "react-icons/io";
-
+import { useRoutineFormStore } from "@/stores/routineStore";
+import ConfirmationMessage from "@/components/messages/confirmation_message"
+import ConfirmationMessage2 from "@/components/messages/confirmation_message2"
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { deleteRoutineById } from "@/services/RoutineService";
+import { toast, ToastContainer } from "react-toastify";
+import type { Routine } from "@/types/routineTypes";
+import ViewRoutineDetailsPopUp from "@/components/pop-ups/ViewRoutineDetailsPopUp";
+import SearchExercisesBarForm from "@/components/forms/SearchExercisesBarForm";
 
 export default function AppLayout() {
     const { data, isLoading, isError } = userAuth();
 
+    const queryClient = useQueryClient();
+
+    const { mutate } = useMutation({
+        mutationFn: deleteRoutineById,
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: (data) => {
+            toast.success(data.message);
+            queryClient.invalidateQueries({ queryKey: ['routines'] });
+            queryClient.invalidateQueries({ queryKey: ['my-routines'] });
+        }
+    })
+
+    const handleConfirmDeleteRoutine = (formData: Routine['id']) => {
+        setShowDeleteRoutineConfirmationForm(false);
+        mutate(formData);
+    }
+
+    const routineId = useRoutineFormStore((state) => state.routineId)
+    const showDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.showDeleteRoutineConfrmationForm)
+    const setShowDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
+    const showViewRoutineDetails = useRoutineFormStore((state) => state.showViewRoutineDetails)
+    const showAddExerciseForm = useRoutineFormStore((state) => state.showAddExerciseForm)
+    const showSaveChangesConfirmationForm = useRoutineFormStore((state) => state.showSaveChangesConfirmationForm)
+    const setShowSaveChangesConfirmationForm = useRoutineFormStore((state) => state.setShowSaveChangesConfirmationForm)
 
     if(isLoading) return <p>Cargando...</p>
     if(isError) return <Navigate to="/auth" replace/>
@@ -36,6 +70,51 @@ export default function AppLayout() {
                     <Outlet />
                 </main>
             </div>
+
+            {showDeleteRoutineConfirmationForm && (
+                <ConfirmationMessage
+                    isOpen={showDeleteRoutineConfirmationForm}
+                    title="Are you sure you want ot delete this routine?"
+                    message="Al information related to this routine will be deleted and cannot be recovered."
+                    onConfirm={() => handleConfirmDeleteRoutine(routineId!)}
+                    onCancel={() => setShowDeleteRoutineConfirmationForm(false)}
+                />
+            )}
+
+            {showSaveChangesConfirmationForm && (
+                <ConfirmationMessage2
+                    isOpen={showSaveChangesConfirmationForm}
+                    title="Are you sure you want to save changes?"
+                    message="Once saved, the changes will be applied permanently"
+                    onConfirm={() => {}}
+                    onCancel={() => setShowSaveChangesConfirmationForm(false)}
+                />
+            )}
+            
+            {showViewRoutineDetails && (
+                <ViewRoutineDetailsPopUp
+                isOpen={showViewRoutineDetails}
+                data={routineId!}
+                />
+            )}
+
+            {showAddExerciseForm && (
+                <SearchExercisesBarForm
+                    isOpen={showAddExerciseForm}
+                />
+            )}
+
+            <ToastContainer 
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </>
     )
 }

@@ -1,23 +1,17 @@
-import { deleteRoutineById, getAllRoutines } from "@/services/RoutineService"
+import { getAllRoutines } from "@/services/RoutineService"
 import { useQuery } from "@tanstack/react-query"
 import RoutineComp from "@/components/app/routineComp";
 import { useState, useEffect } from "react";
 import {CreateNewRoutineForm} from "@/components/forms/CreateNewRoutineForm";
 import { type RoutineCategory, type Routine, routineCategoryArray } from "@/types/routineTypes";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast, ToastContainer } from "react-toastify";
 import { searchRoutines } from "@/services/TrainingService";
 import { useRoutineFormStore } from "@/stores/routineStore";
-import SearchExercisesBarForm from "@/components/forms/SearchExercisesBarForm";
-import  ConfirmationMessage  from "@/components/messages/confirmation_message"
-import ViewRoutineDetailsPopUp from "@/components/pop-ups/ViewRoutineDetailsPopUp"
 
 export default function MyRoutinesView() {
     const [currentPage, setCurrentPage] = useState(1);
     const [query, setQuery] = useState('')
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [category, setCategory] = useState<RoutineCategory | undefined>(undefined)
-    const [selectedRoutineId, setSelectedRoutineId] = useState<Routine['id'] | null>(null);
 
     const { data: searchResults, refetch: searchRefetch} = useQuery({
         queryKey: ['search-routines', debouncedQuery, category],
@@ -45,28 +39,9 @@ export default function MyRoutinesView() {
         queryKey: ['my-routines']
     }) 
 
-    const queryClient = useQueryClient();
-        
-    const { mutate } = useMutation({
-        mutationFn: deleteRoutineById,
-        onError: (error) => {
-            toast.error(error.message);
-        },
-        onSuccess: (data) => {
-            toast.success(data.message);
-            queryClient.invalidateQueries({ queryKey: ['my-routines'] });
-        }
-    })
-
     const handleDeleteRoutine = (formData : Routine['id']) => {
         setRoutineId(formData)
         setShowDeleteRoutineConfirmationForm(true);
-    }
-
-    const handleConfirmDeleteRoutine = (formData : Routine['id']) => {
-        mutate(formData);
-        setShowDeleteRoutineConfirmationForm(false);
-        setShowViewRoutineDetails(false);
     }
 
     const routines = data?.data || [];
@@ -78,13 +53,9 @@ export default function MyRoutinesView() {
 
     const showCreateRoutineForm = useRoutineFormStore((state) => state.showCreateRoutineForm)
     const openCreateRoutineForm = useRoutineFormStore((state) => state.openCreateRoutineForm)
-    const showAddExerciseForm = useRoutineFormStore((state) => state.showAddExerciseForm)
-    const showDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.showDeleteRoutineConfrmationForm)
     const setShowDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
     const setRoutineId = useRoutineFormStore((state) => state.setRoutineId)
-    const routineId = useRoutineFormStore((state) => state.routineId)
     const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
-    const showViewRotuineDetails = useRoutineFormStore((state) => state.showViewRoutineDetails)
 
     if(error){
         return (
@@ -141,7 +112,7 @@ export default function MyRoutinesView() {
                                 data={routine} 
                                 onDelete={() => handleDeleteRoutine(routine.id)}
                                 onViewRoutine={() => {
-                                    setSelectedRoutineId(routine.id);
+                                    setRoutineId(routine.id);
                                     setShowViewRoutineDetails(true);
                                 }}
                             />
@@ -183,41 +154,7 @@ export default function MyRoutinesView() {
                 {showCreateRoutineForm && (
                     <CreateNewRoutineForm/>
                 )}
-
-                {showAddExerciseForm && (
-                    <SearchExercisesBarForm/>
-                )}
-
-                {showDeleteRoutineConfirmationForm && (
-                    <ConfirmationMessage
-                        isOpen={showDeleteRoutineConfirmationForm}
-                        title="Are you sure you want ot delete this routine?"
-                        message="Al information related to this routine will be deleted and cannot be recovered."
-                        onConfirm={() => handleConfirmDeleteRoutine(routineId!)}
-                        onCancel={() => setShowDeleteRoutineConfirmationForm(false)}
-                    />
-                )}
-                
-                {showViewRotuineDetails && (
-                    <ViewRoutineDetailsPopUp
-                        isOpen={showViewRotuineDetails}
-                        data={selectedRoutineId!}
-                    />
-                )}
-
             </div>
-
-            <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-            />
         </>
     )
 }

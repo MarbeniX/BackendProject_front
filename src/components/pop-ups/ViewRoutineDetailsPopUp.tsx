@@ -37,6 +37,8 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
         }
     }, [])
 
+    const { register, handleSubmit, formState: { errors } } = useForm<RoutineUpdateForm>()
+
     const { data: routineData, refetch } = useQuery({
         queryKey: ['routine', data],
         queryFn: () => getRoutineById(data),
@@ -52,10 +54,14 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
         }, 
         onSuccess: (data) => {
             toast.success(data.message);
-            setEditMode(false);
             queryClient.invalidateQueries({ queryKey: ['my-routines'] });
+            queryClient.invalidateQueries({ queryKey: ['routiones'] });
+            queryClient.invalidateQueries({ queryKey: ['routine', routineId] });
         }
     })
+    const handleEditRoutine = ({id, formData} : {id: Routine['id'], formData: RoutineUpdateForm}) => {
+        mutate({id, formData})
+    }
 
     const { mutate: mutateRemoveExercise} = useMutation({
         mutationFn: removeExerciseFromRoutine,
@@ -68,14 +74,6 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
             refetch();
         }
     })
-
-    const { register, handleSubmit, formState: { errors } } = useForm<RoutineUpdateForm>()
-
-    const handleEditRoutine = ({id, formData} : {id: Routine['id'], formData: RoutineUpdateForm}) => {
-        mutate({id, formData})
-        setShowViewRoutineDetails(false)
-    }
-
     const handleRemoveExercise = (exerciseId: Exercise['id']) => {
         mutateRemoveExercise({idRoutine: data, idExercise: exerciseId})
     }
@@ -83,8 +81,10 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
     const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
     const setShowDeleteRoutineConfrmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
     const setShowAddExerciseForm = useRoutineFormStore((state) => state.setShowAddExerciseForm)
-    
-    if(routineData)return (
+    const routineId = useRoutineFormStore((state) => state.routineId)
+    const setShowSaveChangesConfirmationForm = useRoutineFormStore((state) => state.setShowSaveChangesConfirmationForm)
+
+    if(routineData)return(
         <>
             <div 
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 h-screen"
@@ -259,6 +259,7 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                                     type="submit"
                                     value="Save Changes"
                                     className="cursor-pointer bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg w-full"
+                                    onClick={() => setShowSaveChangesConfirmationForm(true)}
                                 />
                             </>
                         ) : (

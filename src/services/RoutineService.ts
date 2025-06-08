@@ -20,9 +20,7 @@ export async function getAllRoutines(){
     try{
         const url = '/routine/getRoutines';
         const { data } = await api.get(url);
-        console.log(data);
         const response = GetRoutoinesResponseSchema.safeParse(data);
-        console.log(response);
         if(response.success == true){
             return response.data;
         }else{
