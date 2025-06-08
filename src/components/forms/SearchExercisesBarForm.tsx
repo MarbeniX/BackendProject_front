@@ -58,7 +58,7 @@ export default function SearchExercisesBarForm() {
 
     return (
         <>
-            <div className="fixed inset-0 bg-black opacity-90 items-center justify-center flex h-screen">
+            <div className="fixed inset-0 bg-black/50 items-center justify-center flex h-screen">
                 <div className="bg-white p-6 shadow-md rounded-md w-1/2 flex flex-col space-y-2">
                     <label className="text-2xl">Search exercises</label>
                     <div className='flex justify-center'>

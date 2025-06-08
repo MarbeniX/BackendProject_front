@@ -27,7 +27,7 @@ export const categoryColormap: Record<RoutineCategory, string> = {
 }
 
 export const routineSchema = z.object({
-    name: z.string().min(1),
+    name: z.string().min(3),
     description: z.string().max(200).optional(),
     category: routineCategorySchema
 })
@@ -43,6 +43,12 @@ export const routineListResponseSchema = z.array(routineResponseSchema)
 
 export const GetRoutoinesResponseSchema = z.object({
     data: z.array(routineResponseSchema),
+    message: z.string(),
+    success: z.boolean(),
+})
+
+export const getRoutineByIdResponseSchema = z.object({
+    data: routineResponseSchema,
     message: z.string(),
     success: z.boolean(),
 })

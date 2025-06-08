@@ -1,11 +1,14 @@
 import { difficultyColorMap, muscleColorMap, type Exercise } from "@/types/exerciseTypes"
+import { IoMdClose } from "react-icons/io";
 
 type exerciseCompProps = {
     data: Exercise
     onClick?: () => void
+    editMode?: boolean
+    onDelete?: () => void
 }
 
-export default function exerciseComp({data, onClick} : exerciseCompProps) {
+export default function exerciseComp({data, onClick, editMode, onDelete} : exerciseCompProps) {
     const colorMuscle = muscleColorMap[data.muscle]
     const colorDifficulty = difficultyColorMap[data.difficulty]
 
@@ -25,6 +28,13 @@ export default function exerciseComp({data, onClick} : exerciseCompProps) {
                 <div className="text-sm ml-auto p-1 rounded-md" style={{backgroundColor: colorDifficulty}}>
                     {data.difficulty}
                 </div>
+                
+                {editMode && (
+                    <IoMdClose 
+                        className="text-2xl cursor-pointer"
+                        onClick={onDelete}
+                    />
+                )}
             </div>
         </>
     )

@@ -17,7 +17,7 @@ export default function MyRoutinesView() {
     const [query, setQuery] = useState('')
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [category, setCategory] = useState<RoutineCategory | undefined>(undefined)
-    const [selectedRoutine, setSelectedRoutine] = useState<Routine | null>(null);
+    const [selectedRoutineId, setSelectedRoutineId] = useState<Routine['id'] | null>(null);
 
     const { data: searchResults, refetch: searchRefetch} = useQuery({
         queryKey: ['search-routines', debouncedQuery, category],
@@ -46,9 +46,6 @@ export default function MyRoutinesView() {
     }) 
 
     const queryClient = useQueryClient();
-    queryClient.invalidateQueries({
-        queryKey: ['my-routines']
-    })
         
     const { mutate } = useMutation({
         mutationFn: deleteRoutineById,
@@ -144,7 +141,7 @@ export default function MyRoutinesView() {
                                 data={routine} 
                                 onDelete={() => handleDeleteRoutine(routine.id)}
                                 onViewRoutine={() => {
-                                    setSelectedRoutine(routine);
+                                    setSelectedRoutineId(routine.id);
                                     setShowViewRoutineDetails(true);
                                 }}
                             />
@@ -204,7 +201,7 @@ export default function MyRoutinesView() {
                 {showViewRotuineDetails && (
                     <ViewRoutineDetailsPopUp
                         isOpen={showViewRotuineDetails}
-                        data={selectedRoutine!}
+                        data={selectedRoutineId!}
                     />
                 )}
 

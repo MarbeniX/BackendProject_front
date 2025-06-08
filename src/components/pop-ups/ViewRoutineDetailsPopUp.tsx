@@ -4,13 +4,14 @@ import { CiMenuKebab } from "react-icons/ci";
 import ExerciseComp from "@/components/app/exerciseComp"
 import { useRoutineFormStore } from "@/stores/routineStore";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateRoutine } from "@/services/RoutineService";
-import { toast } from "react-toastify";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getRoutineById, removeExerciseFromRoutine, updateRoutine } from "@/services/RoutineService";
+import { toast, ToastContainer } from "react-toastify";
+import type { Exercise } from "@/types/exerciseTypes";
 
 type ViewRoutineDetailsPopUpProps = {
     isOpen: boolean;
-    data: Routine
+    data: Routine['id']
     leading?: ReactNode;
 }
 
@@ -36,6 +37,14 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
         }
     }, [])
 
+    const { data: routineData, refetch } = useQuery({
+        queryKey: ['routine', data],
+        queryFn: () => getRoutineById(data),
+        enabled: !!data
+    })
+
+    const queryClient = useQueryClient();
+
     const { mutate } = useMutation({
         mutationFn: updateRoutine,
         onError: (error) => {
@@ -44,30 +53,44 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
         onSuccess: (data) => {
             toast.success(data.message);
             setEditMode(false);
+            queryClient.invalidateQueries({ queryKey: ['my-routines'] });
+        }
+    })
+
+    const { mutate: mutateRemoveExercise} = useMutation({
+        mutationFn: removeExerciseFromRoutine,
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: (data) => {
+            toast.success(data.message);
+            queryClient.invalidateQueries({ queryKey: ['my-routines'] });
+            refetch();
         }
     })
 
     const { register, handleSubmit, formState: { errors } } = useForm<RoutineUpdateForm>()
 
-    const queryClient = useQueryClient();
-
     const handleEditRoutine = ({id, formData} : {id: Routine['id'], formData: RoutineUpdateForm}) => {
-        setShowViewRoutineDetails(false)
-        queryClient.invalidateQueries({ queryKey: ['my-routines'] });
-        queryClient.invalidateQueries({ queryKey: ['routines'] });
         mutate({id, formData})
+        setShowViewRoutineDetails(false)
+    }
+
+    const handleRemoveExercise = (exerciseId: Exercise['id']) => {
+        mutateRemoveExercise({idRoutine: data, idExercise: exerciseId})
     }
 
     const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
     const setShowDeleteRoutineConfrmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
+    const setShowAddExerciseForm = useRoutineFormStore((state) => state.setShowAddExerciseForm)
     
-    return (
+    if(routineData)return (
         <>
             <div 
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 h-screen"
             >
                 <form 
-                    onSubmit={handleSubmit((formData) => handleEditRoutine({id: data.id, formData}))}
+                    onSubmit={handleSubmit((formData) => handleEditRoutine({id: data, formData}))}
                     className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-lg animate-fade-in flex flex-col space-y-4"
                     noValidate
                 >
@@ -77,7 +100,7 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                                 <input
                                     id="name"
                                     type="text"
-                                    defaultValue={data.name}
+                                    defaultValue={routineData.data.name}
                                     placeholder="Enter routine name"
                                     className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     {...register("name", {
@@ -97,7 +120,7 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                                 )}
                             </div>
                         ) : (
-                            <h2 className="text-2xl">{data.name}</h2>
+                            <h2 className="text-2xl">{routineData.data.name}</h2>
                         )}
 
                         <div className="relative inline-block text-left justify-between items-center" ref={menuRef}>
@@ -157,16 +180,16 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                     </div>
 
                     <div className="flex justify-between items-center">
-                        <p>{data.creationDate}</p>
+                        <p>{routineData.data.creationDate}</p>
 
                         {editMode ? (
                             <select
                                 id="category"
-                                defaultValue={data.category}
+                                defaultValue={routineData.data.category}
                                 className="p-2 border border-gray-300 rounded-lg"
                                 {...register('category')}
                             >
-                                <option value=''>{data.category}</option>
+                                <option value=''>{routineData.data.category}</option>
                                 {routineCategoryArray.map((category) => (
                                     <option
                                         key={category}
@@ -175,7 +198,7 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                                 ))}
                             </select>
                         ) : (
-                            <p>{data.category}</p>
+                            <p>{routineData.data.category}</p>
                         )}
                     </div>
 
@@ -184,7 +207,7 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                             <input
                                 id="description"
                                 type="text"
-                                defaultValue={data.description} 
+                                defaultValue={routineData.data.description} 
                                 placeholder="Hard as a rock, easy as a pie"
                                 className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 {...register("description", {
@@ -199,14 +222,19 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                             )} 
                         </>
                     ) : (
-                        <p className="break-words whitespace-normal">{data.description}</p>
+                        <p className="break-words whitespace-normal">{routineData.data.description}</p>
                     )}
 
                     <label className="text-2xl">Exercises</label>
                     <div className="space-y-3 overflow-y-auto pr-2 flex flex-col">
-                        {Array.isArray(data.exercises) && data.exercises.length > 0 ? (
-                            data.exercises.map((exercise) => (
-                                <ExerciseComp key={exercise.id} data={exercise} />
+                        {Array.isArray(routineData.data.exercises) && routineData.data.exercises.length > 0 ? (
+                            routineData.data.exercises.map((exercise) => (
+                                <ExerciseComp 
+                                    key={exercise.id} 
+                                    data={exercise} 
+                                    editMode={editMode}
+                                    onDelete={() => handleRemoveExercise(exercise.id)}
+                                />
                             ))
                             ) : (
                             <p className="mt-auto">No exercises in this routine</p>
@@ -214,12 +242,25 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                     </div>
 
                     <div className="space-y-1">
+                        <button
+                            className="cursor-pointer bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-lg w-full"
+                            onClick={() => setShowViewRoutineDetails(false)}
+                        >
+                            Close
+                        </button>
                         {editMode ? (
-                            <input
-                                type="submit"
-                                value="Save Changes"
-                                className="cursor-pointer bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg w-full"
-                            />
+                            <>
+                                <button
+                                    className="cursor-pointer bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg w-full"
+                                    onClick={() => setShowAddExerciseForm(true)}
+                                >Add new exercises</button>
+
+                                <input
+                                    type="submit"
+                                    value="Save Changes"
+                                    className="cursor-pointer bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg w-full"
+                                />
+                            </>
                         ) : (
                             <button
                                 className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg w-full"
@@ -227,17 +268,22 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                                 Start Session
                             </button>            
                         )}
-
-                        <button
-                            className="cursor-pointer bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-lg w-full"
-                            onClick={() => setShowViewRoutineDetails(false)}
-                        >
-                            Close
-                        </button>
                     </div>
                 </form>
 
             </div>
+
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </>
     )
 }
