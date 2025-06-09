@@ -7,7 +7,7 @@ import { useRoutineFormStore } from "@/stores/routineStore";
 import ConfirmationMessage from "@/components/messages/confirmation_message"
 import ConfirmationMessage2 from "@/components/messages/confirmation_message2"
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { deleteRoutineById } from "@/services/RoutineService";
+import { deleteRoutineById, updateRoutine } from "@/services/RoutineService";
 import { toast, ToastContainer } from "react-toastify";
 import type { Routine } from "@/types/routineTypes";
 import ViewRoutineDetailsPopUp from "@/components/pop-ups/ViewRoutineDetailsPopUp";
@@ -35,13 +35,35 @@ export default function AppLayout() {
         mutate(formData);
     }
 
+    const { mutate: mutateUpdateRoutine } = useMutation({
+        mutationFn: updateRoutine,
+        onError: (error) => {
+            toast.error(error.message);
+        }, 
+        onSuccess: (data) => {
+            toast.success(data.message);
+            queryClient.invalidateQueries({ queryKey: ['my-routines'] });
+            queryClient.invalidateQueries({ queryKey: ['routiones'] });
+            queryClient.invalidateQueries({ queryKey: ['routine', routineId] });
+        }
+    })
+    const handleConfirmUpdateRoutine = () => {
+        if(routineId && updateRoutineFormData){
+            mutateUpdateRoutine({id: routineId, formData: updateRoutineFormData})
+            setShowSaveChangesConfirmationForm(false)
+            setShowViewRoutineDetails(false)
+        }
+    }
+
+    const setShowDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
+    const setShowSaveChangesConfirmationForm = useRoutineFormStore((state) => state.setShowSaveChangesConfirmationForm)
+    const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
     const routineId = useRoutineFormStore((state) => state.routineId)
     const showDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.showDeleteRoutineConfrmationForm)
-    const setShowDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
     const showViewRoutineDetails = useRoutineFormStore((state) => state.showViewRoutineDetails)
     const showAddExerciseForm = useRoutineFormStore((state) => state.showAddExerciseForm)
     const showSaveChangesConfirmationForm = useRoutineFormStore((state) => state.showSaveChangesConfirmationForm)
-    const setShowSaveChangesConfirmationForm = useRoutineFormStore((state) => state.setShowSaveChangesConfirmationForm)
+    const updateRoutineFormData = useRoutineFormStore((state) => state.updateRoutineFormData)
 
     if(isLoading) return <p>Cargando...</p>
     if(isError) return <Navigate to="/auth" replace/>
@@ -86,7 +108,7 @@ export default function AppLayout() {
                     isOpen={showSaveChangesConfirmationForm}
                     title="Are you sure you want to save changes?"
                     message="Once saved, the changes will be applied permanently"
-                    onConfirm={() => {}}
+                    onConfirm={handleConfirmUpdateRoutine}
                     onCancel={() => setShowSaveChangesConfirmationForm(false)}
                 />
             )}

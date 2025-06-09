@@ -5,7 +5,7 @@ import ExerciseComp from "@/components/app/exerciseComp"
 import { useRoutineFormStore } from "@/stores/routineStore";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getRoutineById, removeExerciseFromRoutine, updateRoutine } from "@/services/RoutineService";
+import { getRoutineById, removeExerciseFromRoutine } from "@/services/RoutineService";
 import { toast, ToastContainer } from "react-toastify";
 import type { Exercise } from "@/types/exerciseTypes";
 
@@ -47,20 +47,8 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
 
     const queryClient = useQueryClient();
 
-    const { mutate } = useMutation({
-        mutationFn: updateRoutine,
-        onError: (error) => {
-            toast.error(error.message);
-        }, 
-        onSuccess: (data) => {
-            toast.success(data.message);
-            queryClient.invalidateQueries({ queryKey: ['my-routines'] });
-            queryClient.invalidateQueries({ queryKey: ['routiones'] });
-            queryClient.invalidateQueries({ queryKey: ['routine', routineId] });
-        }
-    })
-    const handleEditRoutine = ({id, formData} : {id: Routine['id'], formData: RoutineUpdateForm}) => {
-        mutate({id, formData})
+    const handleEditRoutine = (formData: RoutineUpdateForm) => {
+        setUpdateRotuineFormData(data, formData)
     }
 
     const { mutate: mutateRemoveExercise} = useMutation({
@@ -81,8 +69,8 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
     const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
     const setShowDeleteRoutineConfrmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
     const setShowAddExerciseForm = useRoutineFormStore((state) => state.setShowAddExerciseForm)
-    const routineId = useRoutineFormStore((state) => state.routineId)
     const setShowSaveChangesConfirmationForm = useRoutineFormStore((state) => state.setShowSaveChangesConfirmationForm)
+    const setUpdateRotuineFormData = useRoutineFormStore((state) => state.setUpdateRoutineFormData)
 
     if(routineData)return(
         <>
@@ -90,7 +78,7 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 h-screen"
             >
                 <form 
-                    onSubmit={handleSubmit((formData) => handleEditRoutine({id: data, formData}))}
+                    onSubmit={handleSubmit(handleEditRoutine)}
                     className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-lg animate-fade-in flex flex-col space-y-4"
                     noValidate
                 >
@@ -243,6 +231,7 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
 
                     <div className="space-y-1">
                         <button
+                            type="button"
                             className="cursor-pointer bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-lg w-full"
                             onClick={() => setShowViewRoutineDetails(false)}
                         >
@@ -251,8 +240,11 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                         {editMode ? (
                             <>
                                 <button
+                                    type="button"
                                     className="cursor-pointer bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg w-full"
-                                    onClick={() => setShowAddExerciseForm(true)}
+                                    onClick={() => {
+                                        setShowAddExerciseForm(true)
+                                    }}
                                 >Add new exercises</button>
 
                                 <input
