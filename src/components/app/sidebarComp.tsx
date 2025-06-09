@@ -17,7 +17,7 @@ export default function sidebarComp({data} : SideBarProps) {
     const adminLinks = data? 
         [
             { name: "Admin profile", path: "" },
-            { name: "Database", path: "" },
+            { name: "Database", path: "/admin/database" },
         ]
     : [];
 

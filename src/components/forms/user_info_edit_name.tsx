@@ -16,11 +16,11 @@ interface UserInfoEditPopupProps {
 }
 
 export default function UserInfoEditPopup({
-                                          isOpen,
-                                          defaultValues,
-                                          onClose,
-                                          onSubmit,
-                                      }: UserInfoEditPopupProps) {
+    isOpen,
+    defaultValues,
+    onClose,
+    onSubmit,
+}: UserInfoEditPopupProps) {
     const {
         register,
         handleSubmit,
@@ -60,12 +60,10 @@ export default function UserInfoEditPopup({
                             <div className="relative">
                                 <input
                                     {...register('name')}
-                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200
-                 text-gray-700 p-3 pr-12"
+                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200 text-gray-700 p-3 pr-12"
                                 />
                                 <Pencil
-                                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2
-                 h-4 w-4 text-gray-500"
+                                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500"
                                 />
                             </div>
 
@@ -74,8 +72,7 @@ export default function UserInfoEditPopup({
                                 <input
                                     id="email"
                                     type="email"
-                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200
-                 text-gray-700 p-3 pr-12"
+                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200 text-gray-700 p-3 pr-12"
                                     {...register('email', {
                                         required: 'Email is required',
                                         pattern: {
@@ -91,8 +88,7 @@ export default function UserInfoEditPopup({
                                 <input
                                     id="password"
                                     type="password"
-                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200
-                 text-gray-700 p-3 pr-12 tracking-widest"
+                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200 text-gray-700 p-3 pr-12 tracking-widest"
                                     {...register('password', {
                                         required: 'Password is required',
                                         minLength: {
@@ -102,8 +98,7 @@ export default function UserInfoEditPopup({
                                     })}
                                 />
                                 <Pencil
-                                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2
-                 h-4 w-4 text-gray-500"
+                                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500"
                                 />
                             </div>
                             <div className="mt-8 flex justify-end gap-8">
@@ -121,8 +116,7 @@ export default function UserInfoEditPopup({
                                 <button
                                     type="submit"
                                     disabled={!isDirty}
-                                    className="w-24 py-2 rounded-md bg-gray-300 text-lg font-medium
-                             hover:bg-gray-400 disabled:opacity-50 disabled:cursor-default transition"
+                                    className="w-24 py-2 rounded-md bg-gray-300 text-lg font-medium hover:bg-gray-400 disabled:opacity-50 disabled:cursor-default transition"
                                 >
                                     Save
                                 </button>

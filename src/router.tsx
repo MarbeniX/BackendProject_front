@@ -9,6 +9,7 @@ import ConfirmAccountView from "./views/Auth/ConfirmAccountView";
 import RequestPasswordCode from "./views/Auth/RequestPasswordCode";
 import ResetPasswordView from "./views/Auth/ResetPasswordView";
 import MyRoutinesView from "./views/App/MyRoutinesView";
+import DatabaseView from "./views/App/DatabaseView";
 
 const router = createBrowserRouter([
     {
@@ -31,6 +32,13 @@ const router = createBrowserRouter([
             { path: 'my-routines', element: <MyRoutinesView /> },
         ]
     },
+    {
+        path: "/admin",
+        element: <AppLayout />,
+        children: [
+            { path: 'database', element: <DatabaseView/>},
+        ]
+    }
 ])
 
 export default function Router(){

@@ -21,7 +21,6 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
     if( !container) return null;
 
     const [menuOpen, setMenuOpen] = useState(false)
-    const [editMode, setEditMode] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -66,11 +65,14 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
         mutateRemoveExercise({idRoutine: data, idExercise: exerciseId})
     }
 
+    const editMode = useRoutineFormStore((state) => state.editMode)
+
     const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
     const setShowDeleteRoutineConfrmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
     const setShowAddExerciseForm = useRoutineFormStore((state) => state.setShowAddExerciseForm)
     const setShowSaveChangesConfirmationForm = useRoutineFormStore((state) => state.setShowSaveChangesConfirmationForm)
     const setUpdateRotuineFormData = useRoutineFormStore((state) => state.setUpdateRoutineFormData)
+    const setEditMode = useRoutineFormStore((state) => state.setEditMode)
 
     if(routineData)return(
         <>
@@ -233,7 +235,10 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                         <button
                             type="button"
                             className="cursor-pointer bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-lg w-full"
-                            onClick={() => setShowViewRoutineDetails(false)}
+                            onClick={() => {
+                                setShowViewRoutineDetails(false)
+                                setEditMode(false)
+                            }}
                         >
                             Close
                         </button>
@@ -251,7 +256,9 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                                     type="submit"
                                     value="Save Changes"
                                     className="cursor-pointer bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg w-full"
-                                    onClick={() => setShowSaveChangesConfirmationForm(true)}
+                                    onClick={() => {
+                                        setShowSaveChangesConfirmationForm(true)
+                                    }}
                                 />
                             </>
                         ) : (

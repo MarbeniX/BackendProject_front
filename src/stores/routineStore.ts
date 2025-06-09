@@ -8,7 +8,8 @@ type RoutineFormState = {
     showViewRoutineDetails?: boolean
     showSaveChangesConfirmationForm: boolean
     routineId: Routine['id']
-    updateRoutineFormData: RoutineUpdateForm | null
+    updateRoutineFormData: RoutineUpdateForm | null,
+    editMode: boolean
 
     openCreateRoutineForm: () => void;
     closeCreateRoutineForm: () => void;
@@ -18,6 +19,7 @@ type RoutineFormState = {
     setShowViewRoutineDetails: (value: boolean) => void;
     setShowSaveChangesConfirmationForm: (value: boolean) => void;
     setUpdateRoutineFormData: (id: Routine['id'], formData: RoutineUpdateForm) => void;
+    setEditMode: (value: boolean) => void;
 }
 
 export const useRoutineFormStore = create<RoutineFormState>((set) => ({
@@ -27,6 +29,7 @@ export const useRoutineFormStore = create<RoutineFormState>((set) => ({
     showSaveChangesConfirmationForm: false,
     routineId: '',
     updateRoutineFormData: null,
+    editMode: false,
 
     openCreateRoutineForm: () => set({ showCreateRoutineForm: true}),
     closeCreateRoutineForm: () => set({ showCreateRoutineForm: false}),
@@ -35,5 +38,6 @@ export const useRoutineFormStore = create<RoutineFormState>((set) => ({
     setShowDeleteRoutineConfrmationForm: (value) => set({ showDeleteRoutineConfrmationForm: value}),
     setShowViewRoutineDetails: (value) => set({ showViewRoutineDetails: value}),
     setShowSaveChangesConfirmationForm: (value) => set({ showSaveChangesConfirmationForm: value }),
-    setUpdateRoutineFormData: (id, updateRoutineFormData) => set({routineId: id, updateRoutineFormData, showSaveChangesConfirmationForm: true})
+    setUpdateRoutineFormData: (id, updateRoutineFormData) => set({routineId: id, updateRoutineFormData, showSaveChangesConfirmationForm: true}),
+    setEditMode: (value) => set({ editMode: value})
 }))

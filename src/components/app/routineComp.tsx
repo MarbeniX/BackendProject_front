@@ -3,6 +3,7 @@ import ExerciseComp from "@/components/app/exerciseComp"
 import { Link } from "react-router-dom"
 import { CiMenuKebab } from "react-icons/ci";
 import { useState, useEffect, useRef } from "react"
+import { useRoutineFormStore } from "@/stores/routineStore";
 
 type routineCompProps = {
     data: Routine,
@@ -27,6 +28,9 @@ export default function routineComp({data, onDelete, onViewRoutine} : routineCom
         };
     }, []);
 
+    const setEditMode = useRoutineFormStore((state) => state.setEditMode)
+    const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
+
     return (
         <>
             <div className="bg-gray-400 flex flex-col rounded-md p-5 shadow-md space-y-3 h-70">
@@ -46,6 +50,8 @@ export default function routineComp({data, onDelete, onViewRoutine} : routineCom
                                         className="cursor-pointer block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                                         onClick={() => {
                                             setIsOpen(false);
+                                            setEditMode(true);
+                                            setShowViewRoutineDetails(true);
                                         }}
                                     >
                                         Edit
