@@ -10,6 +10,9 @@ import RequestPasswordCode from "./views/Auth/RequestPasswordCode";
 import ResetPasswordView from "./views/Auth/ResetPasswordView";
 import MyRoutinesView from "./views/App/MyRoutinesView";
 import DatabaseView from "./views/App/DatabaseView";
+import AdminProfile from "./views/App/AdminProfileView"
+import MyActivityView from "./views/App/MyActivityView";
+import TrainView from "./views/App/TrainView";
 
 const router = createBrowserRouter([
     {
@@ -30,6 +33,8 @@ const router = createBrowserRouter([
         children: [
             { index: true, element: <Home />},
             { path: 'my-routines', element: <MyRoutinesView /> },
+            { path: 'my-activity', element: <MyActivityView /> },
+            { path: 'train', element: <TrainView /> },
         ]
     },
     {
@@ -37,6 +42,7 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
             { path: 'database', element: <DatabaseView/>},
+            { path: 'admin-profile', element: <AdminProfile/>},
         ]
     }
 ])

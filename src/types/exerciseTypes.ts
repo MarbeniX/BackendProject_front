@@ -73,7 +73,7 @@ export interface ExerciseForm {
     title: string;
     muscle: ExerciseMuscle;
     difficulty: ExerciseDifficulty;
-    image: File | null;
+    image: File;
 }
 
 export const exerciseReceiveSchema = exerciseSchema.pick({
@@ -87,4 +87,11 @@ export const exerciseReceiveSchema = exerciseSchema.pick({
 
 export const exerciseReceiveListSchema = z.array(exerciseReceiveSchema)
 
+export const exerciseReceiveListSchemaFullDTO = z.object({
+    data: exerciseReceiveListSchema,
+    message: z.string(),
+    success: z.boolean(),
+})
+
 export type Exercise = z.infer<typeof exerciseSchema>
+export type ExerciseReceive = z.infer<typeof exerciseReceiveSchema>

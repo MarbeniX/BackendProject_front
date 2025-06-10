@@ -1,6 +1,6 @@
 import api from '@/lib/axios';
 import { isAxiosError } from 'axios';
-import { exerciseReceiveListSchema, exerciseSchema, type Exercise, type ExerciseForm } from '@/types/exerciseTypes';
+import { exerciseReceiveListSchemaFullDTO, exerciseSchema, type Exercise, type ExerciseForm } from '@/types/exerciseTypes';
 
 export async function addExercise(exercise: ExerciseForm){
     try{
@@ -54,11 +54,11 @@ export async function updateExerciseById({id, exercise}: {id: Exercise['id'], ex
 
 export async function getAllExercises(){
     try{
-        const url = '/exercise/gettAllExercises'
+        const url = '/exercise/getAllExercises'
         const { data } = await api.get(url);
-        const response = exerciseReceiveListSchema.safeParse(data);
+        const response = exerciseReceiveListSchemaFullDTO.safeParse(data);
         if(response.success){
-            return response.data;
+            return response.data.data;
         }
     }catch (error) {
         if(isAxiosError(error) && error.response){

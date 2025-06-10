@@ -9,7 +9,8 @@ type RoutineFormState = {
     showSaveChangesConfirmationForm: boolean
     routineId: Routine['id']
     updateRoutineFormData: RoutineUpdateForm | null,
-    editMode: boolean
+    editMode: boolean,
+    adminPage: boolean,
 
     openCreateRoutineForm: () => void;
     closeCreateRoutineForm: () => void;
@@ -20,6 +21,7 @@ type RoutineFormState = {
     setShowSaveChangesConfirmationForm: (value: boolean) => void;
     setUpdateRoutineFormData: (id: Routine['id'], formData: RoutineUpdateForm) => void;
     setEditMode: (value: boolean) => void;
+    setAdminPage: (value: boolean) => void;
 }
 
 export const useRoutineFormStore = create<RoutineFormState>((set) => ({
@@ -30,6 +32,7 @@ export const useRoutineFormStore = create<RoutineFormState>((set) => ({
     routineId: '',
     updateRoutineFormData: null,
     editMode: false,
+    adminPage: false,
 
     openCreateRoutineForm: () => set({ showCreateRoutineForm: true}),
     closeCreateRoutineForm: () => set({ showCreateRoutineForm: false}),
@@ -39,5 +42,6 @@ export const useRoutineFormStore = create<RoutineFormState>((set) => ({
     setShowViewRoutineDetails: (value) => set({ showViewRoutineDetails: value}),
     setShowSaveChangesConfirmationForm: (value) => set({ showSaveChangesConfirmationForm: value }),
     setUpdateRoutineFormData: (id, updateRoutineFormData) => set({routineId: id, updateRoutineFormData, showSaveChangesConfirmationForm: true}),
-    setEditMode: (value) => set({ editMode: value})
+    setEditMode: (value) => set({ editMode: value}),
+    setAdminPage: (value) => set({ adminPage: value }),
 }))

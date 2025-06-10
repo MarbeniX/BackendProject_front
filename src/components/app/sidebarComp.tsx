@@ -1,3 +1,4 @@
+import { useRoutineFormStore } from "@/stores/routineStore"
 import type { AuthGetUser } from "@/types/authTypes"
 import { Link } from "react-router-dom"
 
@@ -9,17 +10,19 @@ export default function sidebarComp({data} : SideBarProps) {
 
     const links = [
         { name: "Home", path: ""},
-        { name: "My routines", path: "/my-routines"},
-        { name: "My activity", path: ""},
-        { name: "Train", path: ""},
+        { name: "My routines", path: "/my-routines", onclick: () => setAdminPage(false) },
+        { name: "My activity", path: "/my-activity", onclick: () => setAdminPage(false) },
+        { name: "Train", path: "/train", onclick: () => setAdminPage(false) },
     ]
 
     const adminLinks = data? 
         [
-            { name: "Admin profile", path: "" },
-            { name: "Database", path: "/admin/database" },
+            { name: "Admin profile", path: "/admin/admin-profile", onclick: () => setAdminPage(true) },
+            { name: "Database", path: "/admin/database", onclick: () => setAdminPage(true) },
         ]
     : [];
+
+    const setAdminPage = useRoutineFormStore((state) => state.setAdminPage)
 
     return (
         <>
@@ -31,7 +34,8 @@ export default function sidebarComp({data} : SideBarProps) {
                             to={link.path}
                             className={`text-lg px-4 py-2 rounded hover:bg-gray-700 transition ${
                                 location.pathname === link.path ? "bg-gray-700" : ""
-                            }`}                            
+                            }`}               
+                            onClick={link.onclick}             
                         >
                             {link.name}
                         </Link>
@@ -47,7 +51,8 @@ export default function sidebarComp({data} : SideBarProps) {
                             to={link.path}
                             className={`text-lg px-4 py-2 rounded hover:bg-blue-700 transition ${
                                 location.pathname === link.path ? "bg-blue-700" : ""
-                            }`}                            
+                            }`}
+                            onClick={link.onclick}                            
                         >
                             {link.name}
                         </Link>

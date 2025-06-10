@@ -29,7 +29,6 @@ export default function AppLayout() {
             queryClient.invalidateQueries({ queryKey: ['my-routines'] });
         }
     })
-
     const handleConfirmDeleteRoutine = (formData: Routine['id']) => {
         setShowDeleteRoutineConfirmationForm(false);
         mutate(formData);
@@ -55,15 +54,18 @@ export default function AppLayout() {
         }
     }
 
-    const setShowDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
-    const setShowSaveChangesConfirmationForm = useRoutineFormStore((state) => state.setShowSaveChangesConfirmationForm)
-    const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
     const routineId = useRoutineFormStore((state) => state.routineId)
     const showDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.showDeleteRoutineConfrmationForm)
     const showViewRoutineDetails = useRoutineFormStore((state) => state.showViewRoutineDetails)
     const showAddExerciseForm = useRoutineFormStore((state) => state.showAddExerciseForm)
     const showSaveChangesConfirmationForm = useRoutineFormStore((state) => state.showSaveChangesConfirmationForm)
     const updateRoutineFormData = useRoutineFormStore((state) => state.updateRoutineFormData)
+    const adminPage = useRoutineFormStore((state) => state.adminPage)
+
+    const setShowDeleteRoutineConfirmationForm = useRoutineFormStore((state) => state.setShowDeleteRoutineConfrmationForm)
+    const setShowSaveChangesConfirmationForm = useRoutineFormStore((state) => state.setShowSaveChangesConfirmationForm)
+    const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
+        
 
     if(isLoading) return <p>Cargando...</p>
     if(isError) return <Navigate to="/auth" replace/>
@@ -76,9 +78,15 @@ export default function AppLayout() {
             
             <div className="ml-64 h-screen flex flex-col">
                 <header className="bg-gray-100 p-4 flex items-center justify-between h-auto">
-                    <div className="text-xl font-semibold text-black">
-                        <h1>Hi, what are we doing today?</h1>
-                    </div>
+                    {adminPage ? (
+                        <div className="text-xl font-semibold text-black">
+                            <h1>Hi admin</h1>
+                        </div>
+                    ) : (
+                        <div className="text-xl font-semibold text-black">
+                            <h1>Hi, what are we doing today?</h1>
+                        </div>
+                    )}
 
                     <div className="flex items-center space-x-4">
                         <div className="bg-gray-500 text-white px-4 py-2 rounded-md flex items-center space-x-2">
