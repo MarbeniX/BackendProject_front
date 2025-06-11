@@ -262,6 +262,7 @@ export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDet
                             </>
                         ) : (
                             <button
+                                type="button"
                                 className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg w-full"
                             >
                                 Start Session
