@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import { Link } from "react-router-dom"; // Importamos Link para los enlaces
+import { Link } from "react-router-dom";
 
 export interface SettingsPopupProps {
     isOpen: boolean;
