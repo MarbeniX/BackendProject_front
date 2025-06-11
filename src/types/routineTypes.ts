@@ -12,6 +12,9 @@ export const routineCategorySchema = z.enum([
     'FREE',
 ])
 
+export type RoutineCategory = z.infer<typeof routineCategorySchema>
+export const routineCategoryArray = routineCategorySchema.options;
+
 export const categoryColormap: Record<RoutineCategory, string> = {
     PULL: '#edede9',
     PUSH: '#001d3d',
@@ -24,7 +27,7 @@ export const categoryColormap: Record<RoutineCategory, string> = {
 }
 
 export const routineSchema = z.object({
-    name: z.string().min(1),
+    name: z.string().min(3),
     description: z.string().max(200).optional(),
     category: routineCategorySchema
 })
@@ -44,7 +47,11 @@ export const GetRoutoinesResponseSchema = z.object({
     success: z.boolean(),
 })
 
-export const routineCategoryArray = routineCategorySchema.options
+export const getRoutineByIdResponseSchema = z.object({
+    data: routineResponseSchema,
+    message: z.string(),
+    success: z.boolean(),
+})
 
 export const routineSearchRoutineSchema = z.object({
     id: z.string(),
@@ -53,7 +60,6 @@ export const routineSearchRoutineSchema = z.object({
 
 export const routineSearchListRoutineSchema = z.array(routineSearchRoutineSchema)
 
-export type RoutineCategory = z.infer<typeof routineCategorySchema>
 export type RoutineCreateForm = z.infer<typeof routineSchema>
 export type Routine = z.infer<typeof routineResponseSchema>
 export type RoutineUpdateForm = z.infer<typeof routineSchema>

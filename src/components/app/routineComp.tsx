@@ -3,13 +3,15 @@ import ExerciseComp from "@/components/app/exerciseComp"
 import { Link } from "react-router-dom"
 import { CiMenuKebab } from "react-icons/ci";
 import { useState, useEffect, useRef } from "react"
+import { useRoutineFormStore } from "@/stores/routineStore";
 
 type routineCompProps = {
     data: Routine,
-    onDelete: () => void
+    onDelete: () => void,
+    onViewRoutine: () => void
 }
 
-export default function routineComp({data, onDelete} : routineCompProps) {
+export default function routineComp({data, onDelete, onViewRoutine} : routineCompProps) {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -26,10 +28,8 @@ export default function routineComp({data, onDelete} : routineCompProps) {
         };
     }, []);
 
-    const buttons = [
-        { id: "1", label: "View routine", link: "" },
-        { id: "2", label: "Start session", link: "" },
-    ]
+    const setEditMode = useRoutineFormStore((state) => state.setEditMode)
+    const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
 
     return (
         <>
@@ -47,16 +47,17 @@ export default function routineComp({data, onDelete} : routineCompProps) {
                             {isOpen && (
                                 <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
                                     <button
-                                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                        className="cursor-pointer block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                                         onClick={() => {
-                                            console.log("Option 1 clicked");
                                             setIsOpen(false);
+                                            setEditMode(true);
+                                            setShowViewRoutineDetails(true);
                                         }}
                                     >
                                         Edit
                                     </button>
                                     <button
-                                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                        className="cursor-pointer block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                                         onClick={() => {
                                             onDelete();
                                             setIsOpen(false);
@@ -87,17 +88,19 @@ export default function routineComp({data, onDelete} : routineCompProps) {
                     )}
                 </div>
 
-                <nav className="flex justify-center gap-5 items-center mt-auto">
-                    {buttons.map((button) => (
-                        <Link
-                            key={button.id}
-                            to={button.link}
-                            className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors"
-                        >
-                            {button.label}
-                        </Link>
-                    ))}
-                </nav>
+                <div className="flex justify-between">
+                    <button
+                        className="cursor-pointer bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors"
+                        onClick={() => {onViewRoutine()}}
+                    >View Routine</button>
+
+                    <Link
+                        className="cursor-pointer bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors"
+                        to={''}
+                    >
+                        Start session
+                    </Link>
+                </div>
             </div>
         </>
     )

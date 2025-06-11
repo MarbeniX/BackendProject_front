@@ -1,4 +1,5 @@
 //Plantilla de message confirm y back
+import { useRoutineFormStore } from '@/stores/routineStore';
 import { Fragment, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -28,6 +29,8 @@ export default function SaveChangesDialog({
     const container = typeof window !== 'undefined' ? document.body : null;
     if (!container) return null;
 
+    const setEditMode = useRoutineFormStore((state) => state.setEditMode)
+
     return createPortal(
         <Fragment>
             {/* Backdrop */}
@@ -50,13 +53,16 @@ export default function SaveChangesDialog({
                     <div className="mt-6 flex justify-end gap-4">
                         <button
                             onClick={onCancel}
-                            className="px-4 py-2 font-medium text-black hover:underline transition-all"
+                            className="cursor-pointer px-4 py-2 font-medium text-black hover:underline transition-all"
                         >
                             {backLabel}
                         </button>
                         <button
-                            onClick={onConfirm}
-                            className="px-6 py-2 rounded-md bg-gray-300 hover:bg-gray-400 text-black transition-all"
+                            onClick={() => {
+                                onConfirm();
+                                setEditMode(false); // Reset edit mode after confirmation
+                            }}
+                            className="cursor-pointer px-6 py-2 rounded-md bg-gray-300 hover:bg-gray-400 text-black transition-all"
                         >
                             {confirmLabel}
                         </button>

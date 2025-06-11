@@ -15,15 +15,15 @@ interface SaveWorkoutDialogProps {
 }
 
 export default function SaveWorkoutDialog({
-                                              isOpen,
-                                              title,
-                                              message,
-                                              onSave,
-                                              onBack,
-                                              saveLabel = 'Save',
-                                              backLabel = 'Back',
-                                              leading,
-                                          }: SaveWorkoutDialogProps) {
+    isOpen,
+    title,
+    message,
+    onSave,
+    onBack,
+    saveLabel = 'Save',
+    backLabel = 'Back',
+    leading,
+}: SaveWorkoutDialogProps) {
     if (!isOpen) return null;
 
     const container = typeof window !== 'undefined' ? document.body : null;

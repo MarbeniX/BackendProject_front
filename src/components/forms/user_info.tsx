@@ -19,11 +19,11 @@ interface UserInfoPopupProps {
 }
 
 export default function UserInfoPopup({
-                                          isOpen,
-                                          defaultValues,
-                                          onClose,
-                                          onSubmit,
-                                      }: UserInfoPopupProps) {
+    isOpen,
+    defaultValues,
+    onClose,
+    onSubmit,
+}: UserInfoPopupProps) {
 
     const { register, handleSubmit, reset } = useForm<MyInfoForm>({
         defaultValues,
@@ -60,8 +60,7 @@ export default function UserInfoPopup({
                                 <input
                                     {...register('name')}
                                     readOnly
-                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200
-                             text-gray-700 p-3 pr-12"
+                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200 text-gray-700 p-3 pr-12"
                                 />
                                 <Pencil
                                     onClick={(e) => {
@@ -78,8 +77,7 @@ export default function UserInfoPopup({
                                     {...register('email')}
                                     readOnly
                                     type="email"
-                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200
-                             text-gray-700 p-3 pr-12"
+                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200 text-gray-700 p-3 pr-12"
                                 />
                             </div>
 
@@ -89,8 +87,7 @@ export default function UserInfoPopup({
                                     {...register('password')}
                                     readOnly
                                     type="password"
-                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200
-                             text-gray-700 p-3 pr-12 tracking-widest"
+                                    className="w-76 max-w-full border border-gray-300 rounded-md bg-gray-200 text-gray-700 p-3 pr-12 tracking-widest"
                                 />
                                 <Pencil
                                     onClick={(e) => {
