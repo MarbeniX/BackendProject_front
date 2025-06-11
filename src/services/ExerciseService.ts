@@ -1,18 +1,9 @@
 import api from '@/lib/axios';
 import { isAxiosError } from 'axios';
-import { exerciseReceiveListSchemaFullDTO, exerciseSchema, type Exercise, type ExerciseForm } from '@/types/exerciseTypes';
+import { exerciseReceiveListSchemaFullDTO, getExerciseByIdSchema, type Exercise } from '@/types/exerciseTypes';
 
-export async function addExercise(exercise: ExerciseForm){
+export async function addExercise(formData: FormData){
     try{
-        const formData = new FormData();
-        formData.append('title', exercise.title);
-        formData.append('description', exercise.description || '');
-        formData.append('muscle', exercise.muscle);
-        formData.append('difficulty', exercise.difficulty);
-        if(exercise.image){
-            formData.append('image', exercise.image);
-        }
-
         const url = '/exercise/add-exercise';
         const { data } = await api.post(url, formData, {
             headers: {
@@ -27,19 +18,10 @@ export async function addExercise(exercise: ExerciseForm){
     }
 }
 
-export async function updateExerciseById({id, exercise}: {id: Exercise['id'], exercise: ExerciseForm}){
+export async function updateExerciseById({id, formData}: {id: Exercise['id'], formData: FormData}){
     try{
-        const formData = new FormData();
-        formData.append('description', exercise.description || '');
-        formData.append('title', exercise.title);
-        formData.append('muscle', exercise.muscle);
-        formData.append('difficulty', exercise.difficulty);
-        if(exercise.image){
-            formData.append('image', exercise.image);
-        }
-
         const url = `/exercise/${id}`
-        const { data } = await api.put(url, formData, {
+        const { data } = await api.patch(url, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -83,9 +65,9 @@ export async function getExerciseById(id: Exercise['id']){
     try{
         const url = `/exercise/${id}`;
         const { data } = await api.get(url);
-        const response = exerciseSchema.safeParse(data);
+        const response = getExerciseByIdSchema.safeParse(data);
         if(response.success){
-            return response.data;
+            return response.data.data;
         }
     }catch (error) {
         if(isAxiosError(error) && error.response){

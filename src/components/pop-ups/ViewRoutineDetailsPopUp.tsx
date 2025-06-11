@@ -1,5 +1,5 @@
 import { routineCategoryArray, type Routine, type RoutineUpdateForm } from "@/types/routineTypes";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CiMenuKebab } from "react-icons/ci";
 import ExerciseComp from "@/components/app/exerciseComp"
 import { useRoutineFormStore } from "@/stores/routineStore";
@@ -12,7 +12,6 @@ import type { Exercise } from "@/types/exerciseTypes";
 type ViewRoutineDetailsPopUpProps = {
     isOpen: boolean;
     data: Routine['id']
-    leading?: ReactNode;
 }
 
 export default function ViewRoutineDetailsPopUp({ isOpen, data }: ViewRoutineDetailsPopUpProps) {

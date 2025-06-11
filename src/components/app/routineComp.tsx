@@ -57,7 +57,7 @@ export default function routineComp({data, onDelete, onViewRoutine} : routineCom
                                         Edit
                                     </button>
                                     <button
-                                        className="cursor-pointe block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                        className="cursor-pointer block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                                         onClick={() => {
                                             onDelete();
                                             setIsOpen(false);

@@ -68,12 +68,18 @@ export const exerciseSchema = z.object({
     publicID: z.string().optional()
 })
 
+export const getExerciseByIdSchema = z.object({
+    data: exerciseSchema,
+    message: z.string(),
+    success: z.boolean(),
+})
+
 export interface ExerciseForm {
-    description?: string;
+    description: string;
     title: string;
     muscle: ExerciseMuscle;
     difficulty: ExerciseDifficulty;
-    image: File;
+    image?: FileList;
 }
 
 export const exerciseReceiveSchema = exerciseSchema.pick({

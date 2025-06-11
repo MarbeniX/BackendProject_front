@@ -24,17 +24,26 @@ export default function CreateNewExerciseForm({isOpen, onConfirm, onCancel}: Cre
     const queryClient = useQueryClient();
     const { mutate } = useMutation({
         mutationFn: addExercise,
+        onError: (error) => {
+            toast.error(error.message)
+        },
         onSuccess: (data) => {
             toast.success(data.message)
             queryClient.invalidateQueries({queryKey: ['exercises']})
-        },
-        onError: (error) => {
-            toast.error(error.message)
+            onConfirm();
         }
     })
 
     const handleCreateExercise = (formData: ExerciseForm) => {
-        mutate(formData)
+        const data = new FormData()
+        data.append('title', formData.title);
+        data.append('description', formData.description || '');
+        data.append('muscle', formData.muscle);
+        data.append('difficulty', formData.difficulty);
+        if(formData.image && formData.image.length > 0){
+            data.append('image', formData.image[0]);
+        }
+        mutate(data)
     }
 
     return createPortal(
@@ -44,6 +53,7 @@ export default function CreateNewExerciseForm({isOpen, onConfirm, onCancel}: Cre
                     className="bg-white p-6 flex shadow-md rounded-md flex-col space-y-2 w-[40%]"
                     onSubmit={handleSubmit(handleCreateExercise)}
                     noValidate
+                    encType="multipart/form-data"
                 >
                     <div className="flex justify-between items-center">
                         <h2 className="text-3xl">Create new exercise</h2>
@@ -166,9 +176,9 @@ export default function CreateNewExerciseForm({isOpen, onConfirm, onCancel}: Cre
                         {...register("image", {
                             required: "Please upload a picture",
                             validate: {
-                            lessThan50MB: (files: FileList | null) =>
+                            lessThan50MB: (files: FileList | undefined) =>
                                 !files || files[0]?.size < 50_000_000 || "File size must be less than 50MB",
-                            acceptedFormats: (files: FileList | null) =>
+                            acceptedFormats: (files: FileList | undefined) =>
                                 !files || files[0]?.type.startsWith("image/") || "Only image files are allowed",
                             },
                         })}
