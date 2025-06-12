@@ -1,17 +1,45 @@
+import { useNavigate } from 'react-router-dom';
+import { useRoutineFormStore } from '@/stores/routineStore';
+import { IoMdClose } from "react-icons/io";
 
-const buttons = [
-    { label: 'Routine', onclick: () => console.log('Routine clicked') },
-    { label: 'Free', onclick: () => console.log('Cardio clicked') },
-]
+type readyToSweatCompProps = {
+    title: string
+    message: string
+    isTraining?: boolean
+}
 
-export default function readyToSweatComp() {
+export default function readyToSweatComp({title, message, isTraining}: readyToSweatCompProps) {
+    const navigate = useNavigate();
+    const handleRoutineClick = () => {
+        navigate('/train');
+        setShowSearchRoutinesBar(true);
+        setShowHowDoYouWantToTrain(false);
+    }
+
+    const handleFreeClick = () => {
+        navigate('/train');
+    }
+
+    const buttons = [
+        { label: 'Routine', onclick: handleRoutineClick},
+        { label: 'Free', onclick: handleFreeClick},
+    ]
+
+    const setShowSearchRoutinesBar = useRoutineFormStore((state) => state.setShowSearchRoutinesBar)
+    const setShowHowDoYouWantToTrain = useRoutineFormStore((state) => state.setShowHowDoYouWantToTrain)
     return (
         <>
             <div className="bg-gray-600 rounded-2xl flex flex-col p-5 items-center text-black shadow-md w-full max-w-2xl mx-auto space-y-4">
-                <h2 className="text-2xl md:text-3xl text-center">Ready to sweat?</h2>
-                <p className="text-center text-sm md:text-base">
-                    Choose your workout style for today and let's get moving!
-                </p>
+                <div className='flex items-center justify-center w-full relative'>
+                    <h2 className="text-2xl md:text-3xl text-center">{title}</h2>
+                    {isTraining && (
+                        <IoMdClose 
+                            onClick={() => navigate('/')}
+                            className='text-2xl cursor-pointer right-0 absolute'
+                        />
+                    )}
+                </div>
+                <p className="text-center text-sm md:text-base">{message}</p>
 
                 <div className="flex flex-col sm:flex-row sm:space-x-4 w-full justify-center space-y-4 sm:space-y-0">
                     {buttons.map((button) => (

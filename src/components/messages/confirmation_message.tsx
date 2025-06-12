@@ -1,4 +1,3 @@
-//Plantilla de message con opciones confirm y cancel
 import { Fragment, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 

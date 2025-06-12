@@ -7,6 +7,8 @@ type RoutineFormState = {
     showDeleteRoutineConfrmationForm: boolean;
     showViewRoutineDetails?: boolean
     showSaveChangesConfirmationForm: boolean
+    showSearchRoutinesBar: boolean,
+    showHowDoYouWantToTrainPopUp: boolean,
     routineId: Routine['id']
     updateRoutineFormData: RoutineUpdateForm | null,
     editMode: boolean,
@@ -22,6 +24,8 @@ type RoutineFormState = {
     setUpdateRoutineFormData: (id: Routine['id'], formData: RoutineUpdateForm) => void;
     setEditMode: (value: boolean) => void;
     setAdminPage: (value: boolean) => void;
+    setShowSearchRoutinesBar: (value: boolean) => void;
+    setShowHowDoYouWantToTrain: (value: boolean) => void;
 }
 
 export const useRoutineFormStore = create<RoutineFormState>((set) => ({
@@ -29,6 +33,8 @@ export const useRoutineFormStore = create<RoutineFormState>((set) => ({
     showAddExerciseForm: false,
     showDeleteRoutineConfrmationForm: false,
     showSaveChangesConfirmationForm: false,
+    showSearchRoutinesBar: false,
+    showHowDoYouWantToTrainPopUp: false,
     routineId: '',
     updateRoutineFormData: null,
     editMode: false,
@@ -44,4 +50,6 @@ export const useRoutineFormStore = create<RoutineFormState>((set) => ({
     setUpdateRoutineFormData: (id, updateRoutineFormData) => set({routineId: id, updateRoutineFormData, showSaveChangesConfirmationForm: true}),
     setEditMode: (value) => set({ editMode: value}),
     setAdminPage: (value) => set({ adminPage: value }),
+    setShowSearchRoutinesBar: (value) => set({ showSearchRoutinesBar: value }),
+    setShowHowDoYouWantToTrain: (value) => set({ showHowDoYouWantToTrainPopUp: value})
 }))

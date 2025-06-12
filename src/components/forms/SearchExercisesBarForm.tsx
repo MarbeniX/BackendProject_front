@@ -30,7 +30,7 @@ export default function SearchExercisesBarForm({ isOpen }: SearchExercisesBarFor
     useEffect(() => {
         const timeout = setTimeout(() => {
             setDebouncedQuery(query.trim())
-        }, 300)
+        }, 100)
         return() => {
             clearTimeout(timeout)
         }

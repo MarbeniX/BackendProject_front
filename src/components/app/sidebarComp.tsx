@@ -12,7 +12,9 @@ export default function sidebarComp({data} : SideBarProps) {
         { name: "Home", path: ""},
         { name: "My routines", path: "/my-routines", onclick: () => setAdminPage(false) },
         { name: "My activity", path: "/my-activity", onclick: () => setAdminPage(false) },
-        { name: "Train", path: "/train", onclick: () => setAdminPage(false) },
+        { name: "Train", path: "/train", onclick: () => {
+            setAdminPage(false)
+        } },
     ]
 
     const adminLinks = data? 

@@ -53,7 +53,10 @@ export default function DashboardVie() {
             <div className="space-y-6 w-full">
                 <div className="space-y-6">
                     <h2 className="text-3xl">Home</h2>
-                    <ReadyToSweat />
+                    <ReadyToSweat 
+                        title="Ready to sweat?"
+                        message="Choose your workout style for today and let's get moving!"
+                    />
                 </div>
 
                 <div className="grid grid-cols-[2fr_1fr] space-x-6"> 
@@ -122,7 +125,6 @@ export default function DashboardVie() {
                     {showAddExerciseForm && (
                         <SearchExercisesBarForm
                             isOpen={showAddExerciseForm}
-                            onClickExercise={() => {}}
                         />
                     )}
                 </div>

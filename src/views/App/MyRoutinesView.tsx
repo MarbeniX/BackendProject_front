@@ -22,7 +22,7 @@ export default function MyRoutinesView() {
     useEffect(() => {
         const timeout = setTimeout(() => {
             setDebouncedQuery(query.trim())
-        }, 300)
+        }, 100)
         return () => {
             clearTimeout(timeout)
         }
