@@ -13,11 +13,13 @@ export default function readyToSweatComp({title, message, isTraining}: readyToSw
     const handleRoutineClick = () => {
         navigate('/train');
         setShowSearchRoutinesBar(true);
-        setShowHowDoYouWantToTrain(false);
+        setModeHowDoYouWantToTrain(true);
     }
 
     const handleFreeClick = () => {
         navigate('/train');
+        setShowSearchRoutinesBar(true);
+        setModeHowDoYouWantToTrain(false);
     }
 
     const buttons = [
@@ -26,7 +28,7 @@ export default function readyToSweatComp({title, message, isTraining}: readyToSw
     ]
 
     const setShowSearchRoutinesBar = useRoutineFormStore((state) => state.setShowSearchRoutinesBar)
-    const setShowHowDoYouWantToTrain = useRoutineFormStore((state) => state.setShowHowDoYouWantToTrain)
+    const setModeHowDoYouWantToTrain = useRoutineFormStore((state) => state.setModeHowDoYouWantToTrain)
     return (
         <>
             <div className="bg-gray-600 rounded-2xl flex flex-col p-5 items-center text-black shadow-md w-full max-w-2xl mx-auto space-y-4">

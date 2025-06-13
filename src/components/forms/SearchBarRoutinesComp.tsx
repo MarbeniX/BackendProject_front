@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { routineCategoryArray, type RoutineCategory } from "@/types/routineTypes";
 import { searchRoutines } from "@/services/TrainingService";
 import { IoMdClose } from "react-icons/io";
+import { exerciseDifficultyArray, exerciseMuscleArray, type ExerciseDifficulty, type ExerciseMuscle } from "@/types/exerciseTypes";
+import { searchExercises } from "@/services/RoutineService";
+import ExerciseComp from "@/components/app/exerciseComp"
+import { useRoutineFormStore } from "@/stores/routineStore";
 
 type SearchBarRoutinesCompProps = {
     isOpen: boolean;
@@ -20,11 +24,20 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose } : 
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [category, setCategory] = useState<RoutineCategory | undefined>(undefined);
     const [routineName, setRoutineName] = useState('');
+    const [exerciseName, setExerciseName] = useState('');
+    const [muscle, setMuscle] = useState<ExerciseMuscle | undefined>();
+    const [difficulty, setDifficulty] = useState<ExerciseDifficulty | undefined>();
 
     const { data: searchRoutinesData, refetch: searchRoutinesRefetch } = useQuery({
         queryKey: ['search-routines-train', debouncedQuery, category],
         queryFn: () => searchRoutines({name: debouncedQuery, category}),
         enabled: false,
+    })
+
+    const { data: searchExercisesData, refetch: searchExercisesRefetch } = useQuery({
+        queryKey: ['search-exercises-train', debouncedQuery, muscle, difficulty],
+        queryFn: () => searchExercises({title: debouncedQuery, muscle, difficulty}),
+        enabled: false
     })
 
     useEffect(() => {
@@ -37,10 +50,12 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose } : 
     }, [query])
 
     useEffect(() => {
-        if(debouncedQuery.length > 0 || category) {
-            searchRoutinesRefetch();
+        if(modeHouDoYouWantToTrain){
+            if(debouncedQuery.length > 0 || category) {
+                searchRoutinesRefetch();
+            }
         }
-    }, [debouncedQuery, category, searchRoutinesRefetch])
+    }, [debouncedQuery, category])
 
     const handleTrain = () => {
         if(routineName !== '') {
@@ -48,12 +63,17 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose } : 
         }
     }
 
+    const modeHouDoYouWantToTrain = useRoutineFormStore((state) => state.modeHowDoYouWantToTrain)
     return createPortal (
         <>
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
                 <div className="bg-white rounded-2xl shadow-xl p-6 w-[50%] space-y-2">
                     <div className="flex items-center justify-between">
-                        <label className="text-3xl">Search Routines</label>
+                        {modeHouDoYouWantToTrain === true ? (
+                            <label className="text-3xl">Search Routines</label>
+                        ) : (
+                            <label className="text-3xl">Search Exercises</label>
+                        )}
                         <IoMdClose 
                             className="text-2xl cursor-pointer"
                             onClick={onClose}
@@ -69,20 +89,54 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose } : 
                             onChange={(e) => setQuery(e.target.value)}
                         />
 
-                        <select
-                            value={category ?? ''}
-                            onChange={(e) => setCategory(e.target.value as RoutineCategory)}
-                            className="border border-gray-300 rounded-md p-2 w-1/3"
-                            style={{ textAlign: 'center' }}
-                        >
-                            <option value="">Category</option>
-                            {routineCategoryArray.map((cat) => (
-                                <option
-                                    key={cat}
-                                    value={cat}
-                                >{cat}</option>
-                            ))}
-                        </select>
+                        {modeHouDoYouWantToTrain === true ? (
+                            <select
+                                value={category ?? ''}
+                                onChange={(e) => setCategory(e.target.value as RoutineCategory)}
+                                className="border border-gray-300 rounded-md p-2 w-1/3"
+                                style={{ textAlign: 'center' }}
+                            >
+                                <option value="">Category</option>
+                                {routineCategoryArray.map((cat) => (
+                                    <option
+                                        key={cat}
+                                        value={cat}
+                                    >{cat}</option>
+                                ))}
+                            </select>
+                        ) : (
+                            <div className="flex w-2/3">
+                                <select
+                                    value={muscle ?? ''}
+                                    onChange={(e) => setMuscle(e.target.value as ExerciseMuscle)}
+                                    className="border border-gray-300 rounded-md p-2 w-1/2"
+                                    style={{ textAlign: 'center' }}
+                                >
+                                    <option value=''>Muscle</option>
+                                    {exerciseMuscleArray.map((muscle) => (
+                                        <option
+                                            key={muscle}
+                                            value={muscle}
+                                        >{muscle.charAt(0) + muscle.slice(1).toLocaleLowerCase()}</option>
+                                    ))}
+                                </select>
+
+                                <select
+                                    value={difficulty ?? ''}
+                                    onChange={(e) => setDifficulty(e.target.value as ExerciseDifficulty)}
+                                    className="border border-gray-300 rounded-md p-2 w-1/2"
+                                    style={{ textAlign: 'center' }}
+                                >
+                                    <option value=''>Difficulty</option>
+                                    {exerciseDifficultyArray.map((difficulty) => (
+                                        <option
+                                            key={difficulty}
+                                            value={difficulty}
+                                        >{difficulty.charAt(0) + difficulty.slice(1).toLowerCase()}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
 
                         {searchRoutinesData && searchRoutinesData.length > 0 && (
                             <ul className="mt-10 absolute w-1/2 bg-white border border-gray-300 shadow-lg rounded-lg overflow-y-auto">
@@ -97,10 +151,29 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose } : 
                                 ))}
                             </ul>
                         )}
+
+                        {searchExercisesData && searchExercisesData.length > 0 && (
+                            <ul className="mt-13 absolute w-1/2 bg-white border border-gray-300 shadow-lg overflow-y-auto">
+                                {searchExercisesData.map((exercise) => (
+                                    <li
+                                        key={exercise.id}
+                                        className="cursor-pointer hover:bg-gray-100 rounded-md p-2"
+                                    >
+                                        <ExerciseComp
+                                            data={exercise}
+                                            onClick={() => setExerciseName(exercise.title)}
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
                     </div>
 
                     <div className="flex items-center justify-center gap-2">
-                        <h3 className="rounded-md text-center bg-green-300 text-2xl p-2 w-1/2">Routine: {routineName}</h3>
+                        <h3 className="rounded-md text-center bg-green-300 text-2xl p-2 w-1/2">
+                            {modeHouDoYouWantToTrain ? 'Routine: ' + routineName : 'Exercise: ' + exerciseName}
+                        </h3>
                         <button
                             type="button"
                             className= "w-1/2 cursor-pointer bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600 transition-colors text-2xl"
