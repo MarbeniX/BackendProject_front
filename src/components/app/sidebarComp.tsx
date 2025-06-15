@@ -14,6 +14,7 @@ export default function sidebarComp({data} : SideBarProps) {
         { name: "My activity", path: "/my-activity", onclick: () => setAdminPage(false) },
         { name: "Train", path: "/train", onclick: () => {
             setAdminPage(false)
+            //setShowHowDoYouWantToTrain(true)
         } },
     ]
 
@@ -25,6 +26,7 @@ export default function sidebarComp({data} : SideBarProps) {
     : [];
 
     const setAdminPage = useRoutineFormStore((state) => state.setAdminPage)
+    const setShowHowDoYouWantToTrain = useRoutineFormStore((state) => state.setShowHowDoYouWantToTrain)
 
     return (
         <>

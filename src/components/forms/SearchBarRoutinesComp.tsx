@@ -1,10 +1,10 @@
 import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { routineCategoryArray, type RoutineCategory } from "@/types/routineTypes";
+import { routineCategoryArray, type Routine, type RoutineCategory } from "@/types/routineTypes";
 import { searchRoutines } from "@/services/TrainingService";
 import { IoMdClose } from "react-icons/io";
-import { exerciseDifficultyArray, exerciseMuscleArray, type ExerciseDifficulty, type ExerciseMuscle } from "@/types/exerciseTypes";
+import { exerciseDifficultyArray, exerciseMuscleArray, type Exercise, type ExerciseDifficulty, type ExerciseMuscle } from "@/types/exerciseTypes";
 import { searchExercises } from "@/services/RoutineService";
 import ExerciseComp from "@/components/app/exerciseComp"
 import { useRoutineFormStore } from "@/stores/routineStore";
@@ -13,9 +13,11 @@ type SearchBarRoutinesCompProps = {
     isOpen: boolean;
     onContinue: () => void;
     onClose: () => void;
+    setRoutineID: (id: Routine['id']) => void;
+    setExerciseID: (id: Exercise['id']) => void;
 }
 
-export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose } : SearchBarRoutinesCompProps) {
+export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose, setRoutineID, setExerciseID } : SearchBarRoutinesCompProps) {
     if(!isOpen) return null;
     const container = typeof window !== 'undefined' ? document.body : null;
     if(!container) return null;
@@ -41,7 +43,8 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose } : 
     })
 
     useEffect(() => {
-        const timeout = setTimeout(() => {
+        let timeout: ReturnType<typeof setTimeout>;
+        timeout = setTimeout(() => {
             setDebouncedQuery(query.trim())
         }, 100)
         return () => {
@@ -50,12 +53,14 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose } : 
     }, [query])
 
     useEffect(() => {
-        if(modeHouDoYouWantToTrain){
-            if(debouncedQuery.length > 0 || category) {
+        if(debouncedQuery.length > 0 || category || muscle || difficulty) {
+            if(modeHouDoYouWantToTrain) {
                 searchRoutinesRefetch();
+            }else{
+                searchExercisesRefetch();
             }
         }
-    }, [debouncedQuery, category])
+    }, [debouncedQuery, category, muscle, difficulty])
 
     const handleTrain = () => {
         if(routineName !== '') {
@@ -138,13 +143,16 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose } : 
                             </div>
                         )}
 
-                        {searchRoutinesData && searchRoutinesData.length > 0 && (
+                        {searchRoutinesData && searchRoutinesData.length > 0 && modeHouDoYouWantToTrain && (
                             <ul className="mt-10 absolute w-1/2 bg-white border border-gray-300 shadow-lg rounded-lg overflow-y-auto">
                                 {searchRoutinesData.map((routine) => (
                                     <li
                                         key={routine.id}
                                         className="cursor-pointer hover:bg-gray-100 rounded-md p-2"
-                                        onClick={() => setRoutineName(routine.name)}
+                                        onClick={() => {
+                                            setRoutineName(routine.name);
+                                            setRoutineID(routine.id);
+                                        }}
                                     >
                                         {routine.name}
                                     </li>
@@ -152,7 +160,7 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose } : 
                             </ul>
                         )}
 
-                        {searchExercisesData && searchExercisesData.length > 0 && (
+                        {searchExercisesData && searchExercisesData.length > 0 && !modeHouDoYouWantToTrain && (
                             <ul className="mt-13 absolute w-1/2 bg-white border border-gray-300 shadow-lg overflow-y-auto">
                                 {searchExercisesData.map((exercise) => (
                                     <li
@@ -161,7 +169,10 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose } : 
                                     >
                                         <ExerciseComp
                                             data={exercise}
-                                            onClick={() => setExerciseName(exercise.title)}
+                                            onClick={() => {
+                                                setExerciseName(exercise.title)
+                                                setExerciseID(exercise.id);
+                                            }}
                                         />
                                     </li>
                                 ))}
