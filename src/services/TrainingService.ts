@@ -48,9 +48,7 @@ export async function getAllTrainingSession(){
     try{
         const url = '/training/trainingSessions'
         const { data } = await api.get(url);
-        console.log(data);
         const response = getAllTrainingSessionListResponseSchema.safeParse(data);
-        console.log(response);
         if (response.success) {
             return response.data;
         }
@@ -77,7 +75,7 @@ export async function searchTrainingSessions(params?: {filter?: TrainingSessionS
     try{
         const url = '/training/searchSessions'
         const { data } = await api.get(url, { params });
-        const response = getAllTrainingSessionListSchema.safeParse(data);
+        const response = getAllTrainingSessionListResponseSchema.safeParse(data);
         if (response.success) {
             return response.data;
         }

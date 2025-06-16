@@ -18,6 +18,7 @@ import { type TrainingSession, type TrainingSessionExerciseComp } from "@/types/
 import TrainingSessionExercise from "@/components/app/trainingSessionExerciseComp"
 import { useMutation } from "@tanstack/react-query";
 import { endTrainingSession, startTrainingSession } from "@/services/TrainingService";
+import formatTime from "@/utils/formatTime";
 
 export default function TrainView() {
     const [time, setTime] = useState(0); // tiempo en milisegundos
@@ -175,16 +176,6 @@ export default function TrainView() {
         setMarks([]);
         setIsRunning(false);
         setTime(0);
-    };
-
-    interface FormatTime {
-        (ms: number): string;
-    }
-    const formatTime: FormatTime = (ms) => {
-        const minutes = String(Math.floor(ms / 60000)).padStart(2, "0");
-        const seconds = String(Math.floor((ms % 60000) / 1000)).padStart(2, "0");
-        const centiseconds = String(Math.floor((ms % 1000) / 10)).padStart(2, "0");
-        return `${minutes}:${seconds}:${centiseconds}`;
     };
 
     const showSearchBarRoutines = useRoutineFormStore((state) => state.showSearchRoutinesBar)

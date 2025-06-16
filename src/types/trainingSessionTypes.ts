@@ -58,3 +58,4 @@ export type TrainingSessionExerciseList = z.infer<typeof trainingSessionExercise
 export type TrainingSessionMarks = z.infer<typeof getTrainingSessionMarksSchema>;
 export type TrainingSessionSearchFilter = z.infer<typeof searchTrainingSessionFilterSchema>;
 export type TrainingSessionExerciseComp = z.infer<typeof trainingSessionExerciseCompSchema>;
+export type GetTrainingSessionById = z.infer<typeof getTrainingSessionByIdSchema>;
