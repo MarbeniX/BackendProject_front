@@ -15,8 +15,10 @@ import RoutineExercisesPopUp from "@/components/pop-ups/RoutineExercisesPopUp";
 import { toast, ToastContainer } from "react-toastify";
 import ConfirmationMessage1 from "@/components/messages/confirmation_message"
 import ConfirmationMessage3 from "@/components/messages/confirmation_message3"
-import { type TrainingSessionExerciseComp } from "@/types/trainingSessionTypes";
+import { type TrainingSession, type TrainingSessionExerciseComp } from "@/types/trainingSessionTypes";
 import TrainingSessionExercise from "@/components/app/trainingSessionExerciseComp"
+import { useMutation } from "@tanstack/react-query";
+import { endTrainingSession, startTrainingSession } from "@/services/TrainingService";
 
 export default function TrainView() {
     const [time, setTime] = useState(0); // tiempo en milisegundos
@@ -103,7 +105,11 @@ export default function TrainView() {
                 label: 'Save',
                 icon: <MdSaveAlt />,
                 onClick: () => {
-                    setShowSaveConfirmation(true);
+                    if(marks.length === 0){
+                        toast.error("You need to set at least one mark before saving your workout.");
+                    }else{
+                        setShowSaveConfirmation(true);
+                    }
                 }
             },
         ],
@@ -189,6 +195,45 @@ export default function TrainView() {
         queryFn: () => getRoutineById(routine?.id!),
         enabled: false
     })
+
+    const { mutateAsync: mutateStartTrainingSession } = useMutation({
+        mutationFn: startTrainingSession
+    })
+    const handleStartTrainingSession = async () =>{
+        const data = await mutateStartTrainingSession(actualExerciseTraining?.id!)
+        if(data){
+            const sessionId = data.data
+            handleEndTrainingSession(sessionId)
+            onReset()
+            setActualExerciseTraining(undefined)
+            setIsPaused(false)
+            toast.success(data.message)
+        }else{
+            toast.error("Failed to start training session.")
+        }
+    }
+
+    const { mutate: mutateEndTrainingSession } = useMutation({
+        mutationFn: endTrainingSession, 
+        onSuccess: (data) => {
+            toast.success(data.message)
+        },
+        onError: (error: Error) => {
+            toast.error(error.message)
+        }
+    }) 
+    const handleEndTrainingSession = (sessionId: TrainingSession['id']) => {
+        if(sessionId && marks.length > 0){
+            const marksToSend = marks.map(mark => ({
+                exerciseId: mark.exerciseId,
+                timeToComplete: mark.timeToComplete,
+                setNumer: mark.setNumer,
+                reps: mark.reps,
+                trainingSessionId: sessionId
+            }))
+            mutateEndTrainingSession({ id: sessionId, marks: marksToSend })
+        }
+    }
 
     const showSearchBarRoutines = useRoutineFormStore((state) => state.showSearchRoutinesBar)
     const showHowDoYouWantToTrain = useRoutineFormStore((state) => state.showHowDoYouWantToTrainPopUp)
@@ -348,7 +393,7 @@ export default function TrainView() {
                         onReset()
                         setShowResetConfirmation(false)
                         setActualExerciseTraining(undefined)
-                        setIsPaused(false)  
+                        setIsPaused(false)
                     }}
                 />
             )}
@@ -359,8 +404,9 @@ export default function TrainView() {
                     title="Are you sure you want to save your workout?"
                     message="You can check the details of your workout in the 'My activity' section."
                     onBack={() => setShowSaveConfirmation(false)}
-                    onSave={() => {
+                    onSave={async() => {
                         setShowSaveConfirmation(false)
+                        await handleStartTrainingSession()
                     }}
                 />
             )}

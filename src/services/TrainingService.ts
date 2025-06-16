@@ -6,7 +6,8 @@ import { isAxiosError } from 'axios';
 export async function startTrainingSession(routineId: Routine['id']){
     try{
         const url = '/training/start'
-        const { data } = await api.post(url, routineId)
+        const payload = { routineId}
+        const { data } = await api.post(url, payload)
         return data;
     }catch (error) {
         if(isAxiosError(error) && error.response){
@@ -18,7 +19,8 @@ export async function startTrainingSession(routineId: Routine['id']){
 export async function endTrainingSession({ id, marks} : {id: TrainingSession['id'], marks: TrainingSessionExerciseList}){
     try{
         const url = `/training/${id}`
-        const { data } = await api.put(url, marks);
+        const payload = { marks };
+        const { data } = await api.put(url, payload);
         return data;
     }catch (error) {
         if(isAxiosError(error) && error.response){
