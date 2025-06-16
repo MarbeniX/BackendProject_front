@@ -169,6 +169,7 @@ export default function TrainView() {
         if (timerRef.current) {
             clearInterval(timerRef.current);
         }
+        setMarks([]);
         setIsRunning(false);
         setTime(0);
     };
