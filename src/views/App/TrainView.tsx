@@ -7,7 +7,6 @@ import { RiResetLeftFill } from "react-icons/ri";
 import { VscDebugContinue } from "react-icons/vsc";
 import { IoPause } from "react-icons/io5";
 import { useState, useRef } from "react";
-import type { RoutineNameAndId } from "@/types/routineTypes";
 import type { ActualExerciseTraining, Exercise } from "@/types/exerciseTypes";
 import { useQuery } from "@tanstack/react-query";
 import { getRoutineById } from "@/services/RoutineService";
@@ -26,7 +25,6 @@ export default function TrainView() {
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     const [isPaused, setIsPaused] = useState(false);    
-    const [routine, setRoutine] = useState<RoutineNameAndId>();
     const [exercise, setExercise] = useState<Exercise>();
     const [actualExerciseTraining, setActualExerciseTraining] = useState<ActualExerciseTraining>()
     
@@ -43,7 +41,7 @@ export default function TrainView() {
                 label: 'Change exercise',
                 icon: <FaDumbbell />,
                 onClick: () => {
-                    if (routine) {
+                    if (routineNameAndIdTraining) {
                         searchRoutioneRefetch().then(() => {
                             setShowRoutineExercises(true);
                         });
@@ -68,14 +66,13 @@ export default function TrainView() {
                     }else{
                         if(!isEditingMark){
                             const newMark: TrainingSessionExerciseComp = {
-                            exerciseId: actualExerciseTraining.id,
-                            timeToComplete: time,
-                            setNumer: 0,
-                            reps: 0,
+                                exerciseId: actualExerciseTraining.id,
+                                timeToComplete: time,
+                                setNumber: 0,
+                                reps: 0,
                                 title: actualExerciseTraining.title,
                                 trainingSessionId: "", // Set this to the correct session ID if available
                             }
-                            //setEditingMark(newMark);
                             setMarks((prevMarks) => [...prevMarks, newMark]);
                             setIsEditingMark(true);
                         }else{
@@ -190,9 +187,16 @@ export default function TrainView() {
         return `${minutes}:${seconds}:${centiseconds}`;
     };
 
+    const showSearchBarRoutines = useRoutineFormStore((state) => state.showSearchRoutinesBar)
+    const showHowDoYouWantToTrain = useRoutineFormStore((state) => state.showHowDoYouWantToTrainPopUp)
+    const modeHowDoYouWantToTrain = useRoutineFormStore((state) => state.modeHowDoYouWantToTrain)
+    const routineNameAndIdTraining = useRoutineFormStore((state) => state.routineNameAndIdTraining)
+    const setShowSearchRoutines = useRoutineFormStore((state) => state.setShowSearchRoutinesBar)
+    const setHowDoYouWantToTrain = useRoutineFormStore((state) => state.setShowHowDoYouWantToTrain)
+
     const { data: searchRoutineData, refetch: searchRoutioneRefetch } = useQuery({
-        queryKey: ['search-routine-train', routine?.id],
-        queryFn: () => getRoutineById(routine?.id!),
+        queryKey: ['search-routine-train', routineNameAndIdTraining?.id],
+        queryFn: () => getRoutineById(routineNameAndIdTraining?.id!),
         enabled: false
     })
 
@@ -227,19 +231,13 @@ export default function TrainView() {
             const marksToSend = marks.map(mark => ({
                 exerciseId: mark.exerciseId,
                 timeToComplete: mark.timeToComplete,
-                setNumer: mark.setNumer,
+                setNumber: mark.setNumber,
                 reps: mark.reps,
                 trainingSessionId: sessionId
             }))
             mutateEndTrainingSession({ id: sessionId, marks: marksToSend })
         }
     }
-
-    const showSearchBarRoutines = useRoutineFormStore((state) => state.showSearchRoutinesBar)
-    const showHowDoYouWantToTrain = useRoutineFormStore((state) => state.showHowDoYouWantToTrainPopUp)
-    const modeHowDoYouWantToTrain = useRoutineFormStore((state) => state.modeHowDoYouWantToTrain)
-    const setShowSearchRoutines = useRoutineFormStore((state) => state.setShowSearchRoutinesBar)
-    const setHowDoYouWantToTrain = useRoutineFormStore((state) => state.setShowHowDoYouWantToTrain)
     return (
         <>
             <div className="flex flex-col items-center justify-center h-full bg-fuchsia-300">
@@ -303,7 +301,7 @@ export default function TrainView() {
         
                 {modeHowDoYouWantToTrain ? (
                     <div className="flex items-center justify-center flex-col gap-2">
-                        <p className="text-2xl mt-2">Workout by Routine | {routine?.name}</p>
+                        <p className="text-2xl mt-2">Workout by Routine | {routineNameAndIdTraining.name}</p>
                         {actualExerciseTraining ? (
                             <p>Training {actualExerciseTraining.title}</p>
                         ) : (
@@ -343,7 +341,7 @@ export default function TrainView() {
                                 onEdit={(newSet, newReps) => {
                                     setMarks((prevMarks) =>
                                     prevMarks.map((m, i) =>
-                                        i === idx ? { ...m, sets: newSet, reps: newReps } : m
+                                        i === idx ? { ...m, setNumber: newSet, reps: newReps } : m
                                     ));
                                     setIsEditingMark(false);
                                 }}
@@ -357,11 +355,8 @@ export default function TrainView() {
                 </div>
             </div>
 
-
-            {showHowDoYouWantToTrain && (
-                <HowDoYouWanToTrainPopUp
-                    isOpen={showHowDoYouWantToTrain}
-                />
+            {showHowDoYouWantToTrain && routineNameAndIdTraining.id === '' && (
+                <HowDoYouWanToTrainPopUp isOpen={showHowDoYouWantToTrain} />
             )}
 
             {showSearchBarRoutines && (
@@ -369,7 +364,6 @@ export default function TrainView() {
                     isOpen={showSearchBarRoutines}
                     onContinue={handleContinueTraining}
                     onClose={handleCloseTraining}
-                    setRoutineID={setRoutine}
                     setExerciseID={setExercise}
                 />
             )}

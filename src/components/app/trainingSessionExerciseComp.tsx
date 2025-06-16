@@ -6,11 +6,11 @@ type TrainingSessionExerciseCompProps = {
     index: number;
     isEditingMark: boolean;
     onDelete: () => void;
-    onEdit: (set: number, reps: number) => void;
+    onEdit: (setNumber: number, reps: number) => void;
 }
 
 export default function trainingSessionExerciseComp({ exercise, index, isEditingMark, onDelete, onEdit}: TrainingSessionExerciseCompProps) {
-    const [setNumber, setSetNumber] = useState(exercise.setNumer);
+    const [setNumber, setSetNumber] = useState(exercise.setNumber);
     const [reps, setReps] = useState(exercise.reps);
 
     const formatTime = (ms: number): string => {
@@ -30,8 +30,8 @@ export default function trainingSessionExerciseComp({ exercise, index, isEditing
                 {isEditingMark ? (
                     <input
                         type="number"
-                        value={setNumber}
                         className="w-1/2 bg-white border border-gray-300 rounded-md p-1"
+                        value={setNumber}
                         onChange={(e) => setSetNumber(Number(e.target.value))}
                     />
                 ) : (

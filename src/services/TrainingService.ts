@@ -1,6 +1,6 @@
 import api from '@/lib/axios';
 import { routineSearchListRoutineSchema, type Routine, type RoutineCategory } from '@/types/routineTypes';
-import { getTrainingSessionByIdListSchema, getTrainingSessionByIdSchema, type TrainingSession, type TrainingSessionExerciseList, type TrainingSessionSearchFilter } from '@/types/trainingSessionTypes';
+import { getAllTrainingSessionListResponseSchema, getTrainingSessionByIdSchema, type TrainingSession, type TrainingSessionExerciseList, type TrainingSessionSearchFilter } from '@/types/trainingSessionTypes';
 import { isAxiosError } from 'axios';
 
 export async function startTrainingSession(routineId: Routine['id']){
@@ -48,7 +48,9 @@ export async function getAllTrainingSession(){
     try{
         const url = '/training/trainingSessions'
         const { data } = await api.get(url);
-        const response = getTrainingSessionByIdListSchema.safeParse(data);
+        console.log(data);
+        const response = getAllTrainingSessionListResponseSchema.safeParse(data);
+        console.log(response);
         if (response.success) {
             return response.data;
         }
@@ -75,7 +77,7 @@ export async function searchTrainingSessions(params?: {filter?: TrainingSessionS
     try{
         const url = '/training/searchSessions'
         const { data } = await api.get(url, { params });
-        const response = getTrainingSessionByIdListSchema.safeParse(data);
+        const response = getAllTrainingSessionListSchema.safeParse(data);
         if (response.success) {
             return response.data;
         }

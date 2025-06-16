@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 export const trainingSessionExerciseSchema = z.object({
     exerciseId: z.string(),
-    timeToComplete: z.number().min(0),
-    setNumer: z.number().min(0),
-    reps: z.number().min(0),
+    timeToComplete: z.number(),
+    setNumber: z.number(),
+    reps: z.number(),
     trainingSessionId: z.string(),
 })
 
@@ -13,27 +13,31 @@ export const trainingSessionExerciseListSchema = z.array(trainingSessionExercise
 export const trainingSessionSchema = z.object({
     id: z.string(),
     exercises: trainingSessionExerciseListSchema,
-    trainingDate: z.date(),
+    trainingDate: z.string(),
     userId: z.string(),
     routineId: z.string().optional(),
 })
 
 export const getTrainingSessionMarksSchema = z.object({
-    markId: z.string(),
     exerciseId: z.string(),
+    markId: z.string(),
+    reps: z.number(),
+    setNumber: z.number(),
     timeToComplete: z.number().min(0),
-    setNumber: z.number().min(1),
-    reps: z.number().min(0),
 })
 
 export const getTrainingSessionByIdSchema = z.object({
     marks: z.array(getTrainingSessionMarksSchema).optional(),
-    trainingDate: z.date(),
     routineId: z.string().optional(),
     sessionId: z.string(),
+    trainingDate: z.string(),
 })
 
-export const getTrainingSessionByIdListSchema = z.array(getTrainingSessionByIdSchema);
+export const getAllTrainingSessionListResponseSchema = z.object({
+    data: z.array(getTrainingSessionByIdSchema),
+    message: z.string(),
+    success: z.boolean(),
+})
 
 export const searchTrainingSessionFilterSchema = z.enum([
     '1week',

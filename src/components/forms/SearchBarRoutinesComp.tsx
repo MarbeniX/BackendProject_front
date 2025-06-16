@@ -1,7 +1,7 @@
 import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { routineCategoryArray, type RoutineCategory, type RoutineNameAndId } from "@/types/routineTypes";
+import { routineCategoryArray, type RoutineCategory } from "@/types/routineTypes";
 import { searchRoutines } from "@/services/TrainingService";
 import { IoMdClose } from "react-icons/io";
 import { exerciseDifficultyArray, exerciseMuscleArray, type Exercise, type ExerciseDifficulty, type ExerciseMuscle } from "@/types/exerciseTypes";
@@ -13,11 +13,10 @@ type SearchBarRoutinesCompProps = {
     isOpen: boolean;
     onContinue: () => void;
     onClose: () => void;
-    setRoutineID: (routine: RoutineNameAndId) => void;
     setExerciseID: (exercise: Exercise) => void;
 }
 
-export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose, setRoutineID, setExerciseID } : SearchBarRoutinesCompProps) {
+export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose, setExerciseID } : SearchBarRoutinesCompProps) {
     if(!isOpen) return null;
     const container = typeof window !== 'undefined' ? document.body : null;
     if(!container) return null;
@@ -69,6 +68,8 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose, set
     }
 
     const modeHouDoYouWantToTrain = useRoutineFormStore((state) => state.modeHowDoYouWantToTrain)
+    const setRoutineNameAndIdTraining = useRoutineFormStore((state) => state.setRoutineNameAndIdTraining)
+
     return createPortal (
         <>
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -151,7 +152,7 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose, set
                                         className="cursor-pointer hover:bg-gray-100 rounded-md p-2"
                                         onClick={() => {
                                             setRoutineName(routine.name);
-                                            setRoutineID(routine);
+                                            setRoutineNameAndIdTraining(routine.id, routine.name);
                                         }}
                                     >
                                         {routine.name}

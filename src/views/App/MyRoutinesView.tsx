@@ -128,6 +128,10 @@ export default function MyRoutinesView() {
                             <li
                                 key={routine.id}
                                 className="cursor-pointer hover:bg-gray-100 rounded-md p-2"
+                                onClick={() => {
+                                    setRoutineId(routine.id);
+                                    setShowViewRoutineDetails(true);
+                                }}
                             >
                                 <p>{routine.name}</p>
                             </li>

@@ -15,6 +15,7 @@ export default function sidebarComp({data} : SideBarProps) {
         { name: "Train", path: "/train", onclick: () => {
             setAdminPage(false)
             setShowHowDoYouWantToTrain(true)
+            setRoutineNameAndIdTraining('', '')
         } },
     ]
 
@@ -27,6 +28,7 @@ export default function sidebarComp({data} : SideBarProps) {
 
     const setAdminPage = useRoutineFormStore((state) => state.setAdminPage)
     const setShowHowDoYouWantToTrain = useRoutineFormStore((state) => state.setShowHowDoYouWantToTrain)
+    const setRoutineNameAndIdTraining = useRoutineFormStore((state) => state.setRoutineNameAndIdTraining)
 
     return (
         <>

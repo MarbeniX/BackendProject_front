@@ -1,9 +1,9 @@
 import type { Routine } from "@/types/routineTypes"
 import ExerciseComp from "@/components/app/exerciseComp"
-import { Link } from "react-router-dom"
 import { CiMenuKebab } from "react-icons/ci";
 import { useState, useEffect, useRef } from "react"
 import { useRoutineFormStore } from "@/stores/routineStore";
+import { useNavigate } from "react-router-dom";
 
 type routineCompProps = {
     data: Routine,
@@ -12,6 +12,8 @@ type routineCompProps = {
 }
 
 export default function routineComp({data, onDelete, onViewRoutine} : routineCompProps) {
+    const navigate = useNavigate();
+
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -30,6 +32,8 @@ export default function routineComp({data, onDelete, onViewRoutine} : routineCom
 
     const setEditMode = useRoutineFormStore((state) => state.setEditMode)
     const setShowViewRoutineDetails = useRoutineFormStore((state) => state.setShowViewRoutineDetails)
+    const setRoutineNameAndIdTraining = useRoutineFormStore((state) => state.setRoutineNameAndIdTraining)
+    const setModeHowDoYouWantToTrain = useRoutineFormStore((state) => state.setModeHowDoYouWantToTrain)
 
     return (
         <>
@@ -94,12 +98,16 @@ export default function routineComp({data, onDelete, onViewRoutine} : routineCom
                         onClick={() => {onViewRoutine()}}
                     >View Routine</button>
 
-                    <Link
+                    <button
                         className="cursor-pointer bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors"
-                        to={''}
+                        onClick={() => {
+                            setRoutineNameAndIdTraining(data.id, data.name);
+                            setModeHowDoYouWantToTrain(true);
+                            navigate('/train')
+                        }}
                     >
                         Start session
-                    </Link>
+                    </button>
                 </div>
             </div>
         </>

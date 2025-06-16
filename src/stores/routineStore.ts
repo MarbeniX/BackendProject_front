@@ -1,4 +1,4 @@
-import type { Routine, RoutineUpdateForm } from '@/types/routineTypes';
+import type { Routine, RoutineNameAndId, RoutineUpdateForm } from '@/types/routineTypes';
 import { create } from 'zustand';
 
 type RoutineFormState = {
@@ -14,6 +14,7 @@ type RoutineFormState = {
     updateRoutineFormData: RoutineUpdateForm | null,
     editMode: boolean,
     adminPage: boolean,
+    routineNameAndIdTraining: RoutineNameAndId
 
     openCreateRoutineForm: () => void;
     closeCreateRoutineForm: () => void;
@@ -28,6 +29,7 @@ type RoutineFormState = {
     setShowSearchRoutinesBar: (value: boolean) => void;
     setShowHowDoYouWantToTrain: (value: boolean) => void;
     setModeHowDoYouWantToTrain: (value: boolean) => void,
+    setRoutineNameAndIdTraining: (id: Routine['id'], name: Routine['name']) => void
 }
 
 export const useRoutineFormStore = create<RoutineFormState>((set) => ({
@@ -42,6 +44,7 @@ export const useRoutineFormStore = create<RoutineFormState>((set) => ({
     updateRoutineFormData: null,
     editMode: false,
     adminPage: false,
+    routineNameAndIdTraining: { id: '', name: '' },
 
     openCreateRoutineForm: () => set({ showCreateRoutineForm: true}),
     closeCreateRoutineForm: () => set({ showCreateRoutineForm: false}),
@@ -56,4 +59,5 @@ export const useRoutineFormStore = create<RoutineFormState>((set) => ({
     setShowSearchRoutinesBar: (value) => set({ showSearchRoutinesBar: value }),
     setShowHowDoYouWantToTrain: (value) => set({ showHowDoYouWantToTrainPopUp: value}),
     setModeHowDoYouWantToTrain: (value) => set({ modeHowDoYouWantToTrain: value }),
+    setRoutineNameAndIdTraining: (id, name) => set({ routineNameAndIdTraining: { id, name } })
 }))
