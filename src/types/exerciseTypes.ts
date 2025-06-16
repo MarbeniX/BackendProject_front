@@ -91,6 +91,11 @@ export const exerciseReceiveSchema = exerciseSchema.pick({
     difficulty: true,
 })
 
+export const actualExerciseTrainingSchema =exerciseReceiveSchema.pick({
+    id: true,
+    title: true,
+})
+
 export const exerciseReceiveListSchema = z.array(exerciseReceiveSchema)
 
 export const exerciseReceiveListSchemaFullDTO = z.object({
@@ -101,3 +106,4 @@ export const exerciseReceiveListSchemaFullDTO = z.object({
 
 export type Exercise = z.infer<typeof exerciseSchema>
 export type ExerciseReceive = z.infer<typeof exerciseReceiveSchema>
+export type ActualExerciseTraining = z.infer<typeof actualExerciseTrainingSchema>

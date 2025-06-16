@@ -64,3 +64,4 @@ export type RoutineCreateForm = z.infer<typeof routineSchema>
 export type Routine = z.infer<typeof routineResponseSchema>
 export type RoutineUpdateForm = z.infer<typeof routineSchema>
 export type RoutineGetResponse = z.infer<typeof GetRoutoinesResponseSchema>
+export type RoutineNameAndId = z.infer<typeof routineSearchRoutineSchema>

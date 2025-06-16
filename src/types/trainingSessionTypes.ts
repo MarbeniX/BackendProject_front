@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const trainingSessionExerciseSchema = z.object({
     exerciseId: z.string(),
     timeToComplete: z.number().min(0),
-    setNumer: z.number().min(1),
+    setNumer: z.number().min(0),
     reps: z.number().min(0),
     trainingSessionId: z.string(),
 })
@@ -44,8 +44,13 @@ export const searchTrainingSessionFilterSchema = z.enum([
     'all'
 ])
 
+export const trainingSessionExerciseCompSchema = trainingSessionExerciseSchema.extend({
+    title: z.string(),
+})
+
 export type TrainingSessionExercise = z.infer<typeof trainingSessionExerciseSchema>;
 export type TrainingSession = z.infer<typeof trainingSessionSchema>;
 export type TrainingSessionExerciseList = z.infer<typeof trainingSessionExerciseListSchema>;
 export type TrainingSessionMarks = z.infer<typeof getTrainingSessionMarksSchema>;
 export type TrainingSessionSearchFilter = z.infer<typeof searchTrainingSessionFilterSchema>;
+export type TrainingSessionExerciseComp = z.infer<typeof trainingSessionExerciseCompSchema>;

@@ -14,7 +14,7 @@ export default function sidebarComp({data} : SideBarProps) {
         { name: "My activity", path: "/my-activity", onclick: () => setAdminPage(false) },
         { name: "Train", path: "/train", onclick: () => {
             setAdminPage(false)
-            //setShowHowDoYouWantToTrain(true)
+            setShowHowDoYouWantToTrain(true)
         } },
     ]
 

@@ -1,7 +1,7 @@
 import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { routineCategoryArray, type Routine, type RoutineCategory } from "@/types/routineTypes";
+import { routineCategoryArray, type RoutineCategory, type RoutineNameAndId } from "@/types/routineTypes";
 import { searchRoutines } from "@/services/TrainingService";
 import { IoMdClose } from "react-icons/io";
 import { exerciseDifficultyArray, exerciseMuscleArray, type Exercise, type ExerciseDifficulty, type ExerciseMuscle } from "@/types/exerciseTypes";
@@ -13,8 +13,8 @@ type SearchBarRoutinesCompProps = {
     isOpen: boolean;
     onContinue: () => void;
     onClose: () => void;
-    setRoutineID: (id: Routine['id']) => void;
-    setExerciseID: (id: Exercise['id']) => void;
+    setRoutineID: (routine: RoutineNameAndId) => void;
+    setExerciseID: (exercise: Exercise) => void;
 }
 
 export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose, setRoutineID, setExerciseID } : SearchBarRoutinesCompProps) {
@@ -63,7 +63,7 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose, set
     }, [debouncedQuery, category, muscle, difficulty])
 
     const handleTrain = () => {
-        if(routineName !== '') {
+        if(routineName !== '' || exerciseName !== '') {
             onContinue();
         }
     }
@@ -151,7 +151,7 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose, set
                                         className="cursor-pointer hover:bg-gray-100 rounded-md p-2"
                                         onClick={() => {
                                             setRoutineName(routine.name);
-                                            setRoutineID(routine.id);
+                                            setRoutineID(routine);
                                         }}
                                     >
                                         {routine.name}
@@ -171,7 +171,7 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose, set
                                             data={exercise}
                                             onClick={() => {
                                                 setExerciseName(exercise.title)
-                                                setExerciseID(exercise.id);
+                                                setExerciseID(exercise);
                                             }}
                                         />
                                     </li>

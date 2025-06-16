@@ -7,16 +7,33 @@ import { RiResetLeftFill } from "react-icons/ri";
 import { VscDebugContinue } from "react-icons/vsc";
 import { IoPause } from "react-icons/io5";
 import { useState, useRef } from "react";
-import type { Routine } from "@/types/routineTypes";
-import type { Exercise } from "@/types/exerciseTypes";
+import type { RoutineNameAndId } from "@/types/routineTypes";
+import type { ActualExerciseTraining, Exercise } from "@/types/exerciseTypes";
+import { useQuery } from "@tanstack/react-query";
+import { getRoutineById } from "@/services/RoutineService";
+import RoutineExercisesPopUp from "@/components/pop-ups/RoutineExercisesPopUp";
+import { toast, ToastContainer } from "react-toastify";
+import ConfirmationMessage1 from "@/components/messages/confirmation_message"
+import ConfirmationMessage3 from "@/components/messages/confirmation_message3"
+import { type TrainingSessionExerciseComp } from "@/types/trainingSessionTypes";
+import TrainingSessionExercise from "@/components/app/trainingSessionExerciseComp"
 
 export default function TrainView() {
     const [time, setTime] = useState(0); // tiempo en milisegundos
     const [isRunning, setIsRunning] = useState(false);
-    const [isPaused, setIsPaused] = useState(false);    
-    const [routineID, setRoutineID] = useState<Routine['id']>();
-    const [exerciseID, setExerciseID] = useState<Exercise['id']>();
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    const [isPaused, setIsPaused] = useState(false);    
+    const [routine, setRoutine] = useState<RoutineNameAndId>();
+    const [exercise, setExercise] = useState<Exercise>();
+    const [actualExerciseTraining, setActualExerciseTraining] = useState<ActualExerciseTraining>()
+    
+    const [showRoutineExercises, setShowRoutineExercises] = useState(false);
+    const [showResetConfirmation, setShowResetConfirmation] = useState(false);
+    const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
+
+    const [marks, setMarks] = useState<TrainingSessionExerciseComp[]>([]);
+    const [isEditingMark, setIsEditingMark] = useState(false)
 
     const workoutActions = {
         running: [
@@ -24,7 +41,13 @@ export default function TrainView() {
                 label: 'Change exercise',
                 icon: <FaDumbbell />,
                 onClick: () => {
-                    // Logic to change exercise
+                    if (routine) {
+                        searchRoutioneRefetch().then(() => {
+                            setShowRoutineExercises(true);
+                        });
+                    }else{
+                        toast.error("Please select a routine to change exercise.");
+                    }
                 }
             },
             {
@@ -35,14 +58,39 @@ export default function TrainView() {
                 }
             },
             {
-                label: 'Set marker',
+                label: 'Set mark',
                 icon: <FaFlag />,
                 onClick: () => {
-                    // Logic to set marker
+                    if(!actualExerciseTraining){
+                        toast.error("Please select an exercise to set a mark.");
+                    }else{
+                        if(!isEditingMark){
+                            const newMark: TrainingSessionExerciseComp = {
+                            exerciseId: actualExerciseTraining.id,
+                            timeToComplete: time,
+                            setNumer: 0,
+                            reps: 0,
+                                title: actualExerciseTraining.title,
+                                trainingSessionId: "", // Set this to the correct session ID if available
+                            }
+                            //setEditingMark(newMark);
+                            setMarks((prevMarks) => [...prevMarks, newMark]);
+                            setIsEditingMark(true);
+                        }else{
+                            toast.error("Please finish editing the current mark before setting a new one.");
+                        }
+                    }
                 }
             },
         ],
         stopped: [
+            {
+                label: 'Reset',
+                icon: <RiResetLeftFill />,
+                onClick: () => {
+                    setShowResetConfirmation(true);
+                }
+            },
             {
                 label: 'Continue',
                 icon: <VscDebugContinue />,
@@ -52,18 +100,10 @@ export default function TrainView() {
                 }
             },
             {
-                label: 'Reset',
-                icon: <RiResetLeftFill />,
-                onClick: () => {
-                    onReset()
-                    setIsPaused(false)
-                }
-            },
-            {
                 label: 'Save',
                 icon: <MdSaveAlt />,
                 onClick: () => {
-                    // Logic to set marker
+                    setShowSaveConfirmation(true);
                 }
             },
         ],
@@ -77,6 +117,27 @@ export default function TrainView() {
             }
         ]
     }
+
+    const tableLabels = [
+        {
+            label: 'Number',
+        },
+        {
+            label: 'Time',
+        },
+        {
+            label: 'Exercise trained',
+        },
+        {
+            label: 'Set',
+        },
+        {
+            label: 'Reps',
+        },
+        {
+            label: 'Actions',
+        }
+    ]
 
     const handleContinueTraining = () => {
         setShowSearchRoutines(false)
@@ -122,8 +183,15 @@ export default function TrainView() {
         return `${minutes}:${seconds}:${centiseconds}`;
     };
 
+    const { data: searchRoutineData, refetch: searchRoutioneRefetch } = useQuery({
+        queryKey: ['search-routine-train', routine?.id],
+        queryFn: () => getRoutineById(routine?.id!),
+        enabled: false
+    })
+
     const showSearchBarRoutines = useRoutineFormStore((state) => state.showSearchRoutinesBar)
     const showHowDoYouWantToTrain = useRoutineFormStore((state) => state.showHowDoYouWantToTrainPopUp)
+    const modeHowDoYouWantToTrain = useRoutineFormStore((state) => state.modeHowDoYouWantToTrain)
     const setShowSearchRoutines = useRoutineFormStore((state) => state.setShowSearchRoutinesBar)
     const setHowDoYouWantToTrain = useRoutineFormStore((state) => state.setShowHowDoYouWantToTrain)
     return (
@@ -186,8 +254,61 @@ export default function TrainView() {
                         </>
                     )}
                 </div>
+        
+                {modeHowDoYouWantToTrain ? (
+                    <div className="flex items-center justify-center flex-col gap-2">
+                        <p className="text-2xl mt-2">Workout by Routine | {routine?.name}</p>
+                        {actualExerciseTraining ? (
+                            <p>Training {actualExerciseTraining.title}</p>
+                        ) : (
+                            <p>Select an exercise to set marks</p>
+                        )}
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center flex-col gap-2">
+                        <p className="text-2xl mt-2">Workout Free | {exercise?.title}</p>
+                    </div>
+                )}
 
-                <p className="text-2xl mt-2">Workout by Routine | RoutineName</p>
+                <div className="grid grid-cols-6 items-center justify-items-center w-full p-2 max-w-6xl ">
+                    {tableLabels.map((label) => (
+                        <div 
+                            key={label.label} 
+                            className="text-center rounded-lg"
+                        >
+                            {label.label}
+                        </div>
+                    ))}
+                </div>
+
+
+                <div className="flex flex-col w-full max-w-6xl">
+                    {marks.length > 0 ? (
+                        marks.map((mark, idx) => (
+                            <TrainingSessionExercise
+                                key={idx}
+                                exercise={mark}
+                                index={idx + 1}
+                                isEditingMark={isEditingMark}
+                                onDelete={() => {
+                                    setMarks((prevMarks) => prevMarks.filter((_, index) => index !== idx));
+                                    setIsEditingMark(false);
+                                }}
+                                onEdit={(newSet, newReps) => {
+                                    setMarks((prevMarks) =>
+                                    prevMarks.map((m, i) =>
+                                        i === idx ? { ...m, sets: newSet, reps: newReps } : m
+                                    ));
+                                    setIsEditingMark(false);
+                                }}
+                            />
+                        ))
+                    ) : (
+                        <div className="text-center text-gray-500 mt-4">
+                            No marks recorded yet.
+                        </div>
+                    )}
+                </div>
             </div>
 
 
@@ -202,10 +323,58 @@ export default function TrainView() {
                     isOpen={showSearchBarRoutines}
                     onContinue={handleContinueTraining}
                     onClose={handleCloseTraining}
-                    setRoutineID={setRoutineID}
-                    setExerciseID={setExerciseID}
+                    setRoutineID={setRoutine}
+                    setExerciseID={setExercise}
                 />
             )}
+
+            {showRoutineExercises && (
+                <RoutineExercisesPopUp
+                    isOpen={showRoutineExercises}
+                    routine={searchRoutineData?.data!}
+                    onClose={() => setShowRoutineExercises(false)}
+                    setActualExerciseTraining={setActualExerciseTraining}
+                />
+            )}
+
+            {showResetConfirmation && (
+                <ConfirmationMessage1
+                    isOpen={showResetConfirmation}
+                    title='Are you sure you want to rest your workout?'
+                    message="This timer will start from 0, and all the current marks will be lost."
+                    onCancel={() => setShowResetConfirmation(false)}
+                    onConfirm={() => {
+                        onReset()
+                        setShowResetConfirmation(false)
+                        setActualExerciseTraining(undefined)
+                        setIsPaused(false)  
+                    }}
+                />
+            )}
+
+            {showSaveConfirmation && (
+                <ConfirmationMessage3
+                    isOpen={showSaveConfirmation}
+                    title="Are you sure you want to save your workout?"
+                    message="You can check the details of your workout in the 'My activity' section."
+                    onBack={() => setShowSaveConfirmation(false)}
+                    onSave={() => {
+                        setShowSaveConfirmation(false)
+                    }}
+                />
+            )}
+
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </>
     )
 }

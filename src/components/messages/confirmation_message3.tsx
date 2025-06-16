@@ -51,13 +51,13 @@ export default function SaveWorkoutDialog({
                     <div className="mt-6 flex justify-end gap-4">
                         <button
                             onClick={onBack}
-                            className="px-4 py-2 font-medium text-black hover:text-gray-700 transition-all"
+                            className="cursor-pointer px-4 py-2 font-medium text-black hover:text-gray-700 transition-all"
                         >
                             {backLabel}
                         </button>
                         <button
                             onClick={onSave}
-                            className="px-6 py-2 rounded-md bg-gray-300 hover:bg-gray-400 text-black transition-all"
+                            className="cursor-pointer px-6 py-2 rounded-md bg-gray-300 hover:bg-gray-400 text-black transition-all"
                         >
                             {saveLabel}
                         </button>
