@@ -1,6 +1,6 @@
 import api from '@/lib/axios';
 import { isAxiosError } from 'axios';
-import { getUserSchema, type AuthCreateAccountForm, type AuthLoginForm, type AuthRequestCodeForm, type AuthUpdatePasswordForm } from '@/types/authTypes';
+import { type AuthCreateAccountForm, type AuthLoginForm, type AuthRequestCodeForm, type AuthUpdatePasswordForm } from '@/types/authTypes';
 import type { TokenConfirmAccountForm } from '@/types/tokenTypes';
 
 export async function createAccount(formData : AuthCreateAccountForm){
