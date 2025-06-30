@@ -153,6 +153,7 @@ export default function SearchBarRoutinesComp({ isOpen, onContinue, onClose, set
                                         onClick={() => {
                                             setRoutineName(routine.name);
                                             setRoutineNameAndIdTraining(routine.id, routine.name);
+                                            console.log('Routine selected:', routine.name, routine.id);
                                         }}
                                     >
                                         {routine.name}

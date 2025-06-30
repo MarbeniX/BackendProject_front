@@ -195,7 +195,8 @@ export default function TrainView() {
         mutationFn: startTrainingSession
     })
     const handleStartTrainingSession = async () =>{
-        const data = await mutateStartTrainingSession(actualExerciseTraining?.id!)
+        const data = await mutateStartTrainingSession(routineNameAndIdTraining.id)
+        console.log(routineNameAndIdTraining.id)
         if(data){
             const sessionId = data.data
             handleEndTrainingSession(sessionId)
