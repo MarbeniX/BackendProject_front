@@ -1,5 +1,5 @@
 import api from '@/lib/axios';
-import type { AuthUpdatePasswordForm } from '@/types/authTypes';
+import { getUserSchema, type AuthUpdatePasswordForm } from '@/types/authTypes';
 import { userGetProfilePictureSchema, type UserChangeUsernameForm, type UserProfilePicture } from '@/types/userTypes';
 import { isAxiosError } from 'axios';
 
